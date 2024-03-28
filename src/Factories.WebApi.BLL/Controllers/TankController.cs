@@ -2,12 +2,14 @@
 using Factories.WebApi.BLL.Dto;
 using Factories.WebApi.DAL.Entities;
 using Factories.WebApi.DAL.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Factories.WebApi.BLL.Controllers
 {
     [ApiController]
     [Route("api/tank")]
+    [Authorize]
     public class TankController(IRepository<Tank> tanksRepository, IMapper mapper) : ControllerBase
     {
         private readonly IMapper mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -35,6 +37,7 @@ namespace Factories.WebApi.BLL.Controllers
             return Ok(tankDto);
         }
 
+        [Authorize(Policy = "TankOperatorPolicy")]
         [HttpPost]
         public IActionResult CreateTank(Tank tank)
         {
@@ -45,6 +48,7 @@ namespace Factories.WebApi.BLL.Controllers
             return Ok();
         }
 
+        [Authorize(Policy = "TankOperatorPolicy")]
         [HttpPut]
         public IActionResult UpdateTank(int id, Tank tank)
         {
@@ -55,6 +59,7 @@ namespace Factories.WebApi.BLL.Controllers
             return Ok();
         }
 
+        [Authorize(Policy = "TankOperatorPolicy")]
         [HttpDelete]
         public IActionResult DeleteTank(int id)
         {

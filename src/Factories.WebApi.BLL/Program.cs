@@ -21,11 +21,11 @@ namespace Factories.WebApi.BLL
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddScoped<UserService>();
-
             builder.Services.AddIdentity<IdentityUser, IdentityRole>()
                              .AddEntityFrameworkStores<UsersDbContext>()
                              .AddDefaultTokenProviders();
+
+            builder.Services.AddScoped<RoleManager<IdentityRole>>();
 
             builder.Services.AddScoped(provider =>
             {
@@ -53,7 +53,12 @@ namespace Factories.WebApi.BLL
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("Jwt:SecretKey").Value))
                 };
             });
-            builder.Services.AddAuthorization();
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("UnitOperatorPolicy", policy => policy.RequireClaim("UnitOperator", "true"));
+                options.AddPolicy("TankOperatorPolicy", policy => policy.RequireClaim("TankOpeartaior", "true"));
+            }
+            );
 
             builder.Services.AddDbContext<FacilitiesDbContext>(options =>
                           options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -132,6 +137,7 @@ namespace Factories.WebApi.BLL
             app.MapControllers();
 
             app.Run();
+           
         }
     }
 }

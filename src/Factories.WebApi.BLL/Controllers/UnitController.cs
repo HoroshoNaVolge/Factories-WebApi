@@ -3,12 +3,14 @@ using Factories.WebApi.BLL.Dto;
 using Factories.WebApi.DAL.Entities;
 using Factories.WebApi.DAL.Interfaces;
 using Factories.WebApi.DAL.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Factories.WebApi.BLL.Controllers
 {
     [ApiController]
     [Route("api/unit")]
+    [Authorize]
     public class UnitController(IRepository<Unit> unitsRepository, IMapper mapper) : ControllerBase
     {
         private readonly IMapper mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -33,6 +35,7 @@ namespace Factories.WebApi.BLL.Controllers
             return Ok(mapper.Map<UnitDto>(unit));
         }
 
+        [Authorize(Policy = "UnitOperatorPolicy")]
         [HttpPost]
         public IActionResult CreateUnit(Unit unit)
         {
@@ -42,6 +45,7 @@ namespace Factories.WebApi.BLL.Controllers
             return Ok();
         }
 
+        [Authorize(Policy = "UnitOperatorPolicy")]
         [HttpPut]
         public IActionResult UpdateUnit(int id, Unit unit)
         {
@@ -51,6 +55,7 @@ namespace Factories.WebApi.BLL.Controllers
             return Ok();
         }
 
+        [Authorize(Policy = "UnitOperatorPolicy")]
         [HttpDelete("{id}")]
         public IActionResult DeleteUnit(int id)
         {

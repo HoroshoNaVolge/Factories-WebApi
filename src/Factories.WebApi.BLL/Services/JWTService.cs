@@ -11,16 +11,27 @@ namespace Factories.WebApi.BLL.Services
     {
         private readonly string _key = key;
 
-        public string GenerateJwtToken(IdentityUser user)
+        public string GenerateJwtToken(IdentityUser user, IList<Claim> additionalClaims, IList<string> roles)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(_key);
+
+
             var claims = new List<Claim>
         {
             new(ClaimTypes.NameIdentifier, user.Id),
             new(ClaimTypes.Email, user.Email),
             new(ClaimTypes.Name, user.UserName),
-        }; 
+        };
+
+            if (additionalClaims != null && additionalClaims.Any())
+                claims.AddRange(additionalClaims);
+
+            if (roles != null && roles.Any())
+                foreach (var role in roles)
+                    claims.Add(new Claim(ClaimTypes.Role, role.ToString()));
+
+
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
