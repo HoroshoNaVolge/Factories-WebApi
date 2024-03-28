@@ -20,7 +20,7 @@ namespace Factories.WebApi.BLL.Services
                     return;
 
                 await UpdateAllVolumesRandomlyAsync(tankRepository, stoppingToken);
-                tankRepository.Save();
+                tankRepository.SaveAsync();
                 await Task.Delay(5000, stoppingToken);
             }
         }

@@ -5,10 +5,10 @@
         Task<IEnumerable<T>>? GetAllAsync(CancellationToken token);
         T? Get(int id);
         IEnumerable<T>? Find(Func<T, Boolean> predicate);
-        void Create(T item);
+        Task CreateAsync(T item);
         void Update(int id, T facility);
         void Delete(int id);
 
-        void Save();
+        Task SaveAsync();
     }
 }

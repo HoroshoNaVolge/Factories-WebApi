@@ -1,17 +1,9 @@
 ﻿using Factories.WebApi.BLL.Models;
 using Factories.WebApi.BLL.Services;
-using Factories.WebApi.DAL.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Factories.WebApi.BLL.Controllers
 {
@@ -64,24 +56,36 @@ namespace Factories.WebApi.BLL.Controllers
         [Authorize]
         public async Task<IActionResult> UpdatePassword([FromBody] UpdatePasswordModel model)
         {
-            var user = await userManager.GetUserAsync(User);
+            var targetUser = await userManager.FindByNameAsync(model.Login);
 
-            if (user is null)
+            if (targetUser is null)
                 return NotFound("User not found");
 
             // Проверяем, является ли текущий пользователь администратором
             var isAdmin = User.IsInRole("Admin");
 
             // Если текущий пользователь не администратор и пытается изменить пароль другого пользователя, возвращаем ошибку
-            if (!isAdmin && user.UserName != User.Identity.Name)
-                return Forbid("You do not have permission to change other users' passwords");
+            if (!isAdmin && targetUser.UserName != User.Identity.Name)
+                return StatusCode(403,"You do not have permission to change other users' passwords");
 
-            var result = await userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+            if (targetUser.UserName == User.Identity.Name)
+            {
+                var result = await userManager.ChangePasswordAsync(targetUser, model.CurrentPassword, model.NewPassword);
 
-            if (result.Succeeded)
-                return Ok("Password updated");
+                if (result.Succeeded)
+                    return Ok("Password updated");
 
-            return BadRequest(result.Errors);
+                return BadRequest(result.Errors);
+            }
+
+            // Если пользователь администратор, то он может изменять пароль любого пользователя
+
+            var changeResult = await userManager.ChangePasswordAsync(targetUser, model.CurrentPassword, model.NewPassword);
+
+            if (changeResult.Succeeded)
+                return Ok($"Password for user {model.Login} updated");
+
+            return BadRequest(changeResult.Errors);
 
         }
 

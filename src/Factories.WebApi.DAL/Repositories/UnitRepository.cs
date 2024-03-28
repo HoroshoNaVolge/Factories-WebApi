@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Factories.WebApi.DAL.Repositories
 {
-    public class UnitRepository(FacilitiesDbContext db) : IRepository<Unit>
+    public class UnitRepository(FacilitiesDbContext db) : IRepository<Unit>, IDisposable
     {
         private readonly FacilitiesDbContext db = db;
         private bool disposed = false;
-        public void Create(Unit item) => db.Units.Add(item);
+        public async Task CreateAsync(Unit item) => await db.Units.AddAsync(item);
 
         public void Delete(int id)
         {
@@ -33,7 +33,7 @@ namespace Factories.WebApi.DAL.Repositories
             db.Entry(existingUnit).CurrentValues.SetValues(unit);
         }
 
-        public async void Save() => await db.SaveChangesAsync();
+        public async Task SaveAsync() => await db.SaveChangesAsync();
 
         public void Dispose()
         {

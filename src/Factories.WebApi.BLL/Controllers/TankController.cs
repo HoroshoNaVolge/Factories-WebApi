@@ -9,7 +9,7 @@ namespace Factories.WebApi.BLL.Controllers
 {
     [ApiController]
     [Route("api/tank")]
-    [Authorize]
+    [Authorize(Policy = "AdminOrTankOperatorPolicy")]
     public class TankController(IRepository<Tank> tanksRepository, IMapper mapper) : ControllerBase
     {
         private readonly IMapper mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -37,35 +37,32 @@ namespace Factories.WebApi.BLL.Controllers
             return Ok(tankDto);
         }
 
-        [Authorize(Policy = "TankOperatorPolicy")]
         [HttpPost]
         public IActionResult CreateTank(Tank tank)
         {
-            tanksRepository.Create(tank);
+            tanksRepository.CreateAsync(tank);
 
-            tanksRepository.Save();
+            tanksRepository.SaveAsync();
 
             return Ok();
         }
 
-        [Authorize(Policy = "TankOperatorPolicy")]
         [HttpPut]
         public IActionResult UpdateTank(int id, Tank tank)
         {
             tanksRepository.Update(id, tank);
 
-            tanksRepository.Save();
+            tanksRepository.SaveAsync();
 
             return Ok();
         }
 
-        [Authorize(Policy = "TankOperatorPolicy")]
         [HttpDelete]
         public IActionResult DeleteTank(int id)
         {
             tanksRepository.Delete(id);
 
-            tanksRepository.Save();
+            tanksRepository.SaveAsync();
 
             return Ok();
         }

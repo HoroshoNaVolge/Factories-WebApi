@@ -44,10 +44,10 @@ namespace Factories.WebApi.BLL
             {
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    ValidateLifetime = false,
-                    ValidateIssuerSigningKey = false,
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
                     ValidIssuer = builder.Configuration["Jwt:Issuer"],
                     ValidAudience = builder.Configuration["Jwt:Audience"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("Jwt:SecretKey").Value))
@@ -55,8 +55,22 @@ namespace Factories.WebApi.BLL
             });
             builder.Services.AddAuthorization(options =>
             {
-                options.AddPolicy("UnitOperatorPolicy", policy => policy.RequireClaim("UnitOperator", "true"));
-                options.AddPolicy("TankOperatorPolicy", policy => policy.RequireClaim("TankOpeartaior", "true"));
+                //options.AddPolicy("UnitOperatorPolicy", policy => policy.RequireClaim("UnitOperator", "true"));
+                //options.AddPolicy("TankOperatorPolicy", policy => policy.RequireClaim("TankOpeartaior", "true"));
+                options.AddPolicy("AdminOrUnitOperatorPolicy", policy =>
+                {
+                    policy.RequireAssertion(context =>
+                    {
+                        return context.User.IsInRole("Admin") || context.User.HasClaim(c => c.Type == "UnitOperator");
+                    });
+                });
+                options.AddPolicy("AdminOrTankOperatorPolicy", policy =>
+                {
+                    policy.RequireAssertion(context =>
+                    {
+                        return context.User.IsInRole("Admin") || context.User.HasClaim(c => c.Type == "TankOperator");
+                    });
+                });
             }
             );
 
@@ -137,7 +151,7 @@ namespace Factories.WebApi.BLL
             app.MapControllers();
 
             app.Run();
-           
+
         }
     }
 }

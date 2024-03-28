@@ -10,7 +10,7 @@ namespace Factories.WebApi.DAL.Repositories
         private readonly FacilitiesDbContext db = db;
         private bool disposed = false;
 
-        public void Create(Tank item) => db.Tanks.Add(item);
+        public async Task CreateAsync(Tank item) => await db.Tanks.AddAsync(item);
 
         public void Delete(int id)
         {
@@ -38,7 +38,7 @@ namespace Factories.WebApi.DAL.Repositories
             db.Entry(existingTank).CurrentValues.SetValues(tank);
         }
 
-        public async void Save() => await db.SaveChangesAsync();
+        public async Task SaveAsync() => await db.SaveChangesAsync();
 
         public void Dispose()
         {

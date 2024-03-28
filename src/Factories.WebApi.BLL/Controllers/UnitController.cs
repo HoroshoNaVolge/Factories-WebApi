@@ -10,12 +10,12 @@ namespace Factories.WebApi.BLL.Controllers
 {
     [ApiController]
     [Route("api/unit")]
-    [Authorize]
+    [Authorize(Policy = "AdminOrUnitOperatorPolicy")]
     public class UnitController(IRepository<Unit> unitsRepository, IMapper mapper) : ControllerBase
     {
         private readonly IMapper mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         private readonly IRepository<Unit> unitsRepository = unitsRepository ?? throw new ArgumentNullException(nameof(unitsRepository));
-
+       
         [HttpGet("all")]
         public async Task<ActionResult<IReadOnlyCollection<UnitDto>>> GetUnits(CancellationToken token)
         {
@@ -35,32 +35,29 @@ namespace Factories.WebApi.BLL.Controllers
             return Ok(mapper.Map<UnitDto>(unit));
         }
 
-        [Authorize(Policy = "UnitOperatorPolicy")]
         [HttpPost]
         public IActionResult CreateUnit(Unit unit)
         {
-            unitsRepository.Create(unit);
-            unitsRepository.Save();
+            unitsRepository.CreateAsync(unit);
+            unitsRepository.SaveAsync();
 
             return Ok();
         }
 
-        [Authorize(Policy = "UnitOperatorPolicy")]
         [HttpPut]
         public IActionResult UpdateUnit(int id, Unit unit)
         {
             unitsRepository.Update(id, unit);
-            unitsRepository.Save();
+            unitsRepository.SaveAsync();
 
             return Ok();
         }
 
-        [Authorize(Policy = "UnitOperatorPolicy")]
         [HttpDelete("{id}")]
         public IActionResult DeleteUnit(int id)
         {
             unitsRepository.Delete(id);
-            unitsRepository.Save();
+            unitsRepository.SaveAsync();
 
             return Ok();
         }
