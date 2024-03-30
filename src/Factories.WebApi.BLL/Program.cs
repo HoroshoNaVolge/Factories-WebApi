@@ -12,6 +12,8 @@ using Factories.WebApi.DAL.Entities;
 using Factories.WebApi.BLL.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Factories.WebApi.BLL
 {
@@ -27,14 +29,13 @@ namespace Factories.WebApi.BLL
 
             builder.Services.AddScoped<RoleManager<IdentityRole>>();
 
-            builder.Services.AddScoped(provider =>
-            {
-                var configuration = provider.GetRequiredService<IConfiguration>();
-                var issuer = configuration.GetSection("Jwt:Issuer").Value;
-                var audience = configuration.GetSection("Jwt:Audience").Value;
-                var key = configuration.GetSection("Jwt:SecretKey").Value;
-                return new JwtService(issuer, audience, key);
-            });
+
+            var jwtConfig = builder.Configuration.GetSection(JwtConfig.SectionName).Get<JwtConfig>()
+                         ?? throw new InvalidOperationException($"Missing required {JwtConfig.SectionName} config section!");
+           
+            builder.Services.AddSingleton(jwtConfig);
+
+            builder.Services.AddScoped<JwtService>();
 
             builder.Services.AddAuthentication(options =>
             {
@@ -55,8 +56,6 @@ namespace Factories.WebApi.BLL
             });
             builder.Services.AddAuthorization(options =>
             {
-                //options.AddPolicy("UnitOperatorPolicy", policy => policy.RequireClaim("UnitOperator", "true"));
-                //options.AddPolicy("TankOperatorPolicy", policy => policy.RequireClaim("TankOpeartaior", "true"));
                 options.AddPolicy("AdminOrUnitOperatorPolicy", policy =>
                 {
                     policy.RequireAssertion(context =>
@@ -83,12 +82,9 @@ namespace Factories.WebApi.BLL
                              .AddScoped<IRepository<Unit>, UnitRepository>()
                              .AddScoped<IRepository<Factory>, FactoryRepository>();
 
-
             builder.Services.AddAutoMapper(typeof(MappingProfile));
 
             builder.Services.AddHostedService<WorkerService>();
-
-
 
             Log.Logger = new LoggerConfiguration()
              .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Error)
@@ -101,7 +97,6 @@ namespace Factories.WebApi.BLL
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-
 
             builder.Services.AddSwaggerGen(c =>
             {
@@ -129,7 +124,7 @@ namespace Factories.WebApi.BLL
                     Id = "Bearer"
                 }
             },
-            new string[] { }
+            Array.Empty<string>()
         }
     });
             });

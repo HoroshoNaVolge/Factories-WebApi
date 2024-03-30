@@ -5,13 +5,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Factories.WebApi.DAL.Repositories
 {
-    public class TankRepository(FacilitiesDbContext db) : IRepository<Tank>, IDisposable
+    public class TankRepository(FacilitiesDbContext db, IRepository<Unit> unitsRepository) : IRepository<Tank>
     {
+        private readonly IRepository<Unit> unitsRepository = unitsRepository;
         private readonly FacilitiesDbContext db = db;
-        private bool disposed = false;
 
-        public async Task CreateAsync(Tank item) => await db.Tanks.AddAsync(item);
+        public void Create(Tank tank)
+        {
+            tank.Unit = unitsRepository.Get(tank.UnitId) ?? throw new ArgumentException($"Invalid unit id {tank.UnitId}");
 
+            db.Tanks.Add(tank);
+        }
         public void Delete(int id)
         {
             Tank? item = db.Tanks.Find(id);
@@ -32,29 +36,17 @@ namespace Factories.WebApi.DAL.Repositories
         public void Update(int id, Tank tank)
         {
             var existingTank = db.Tanks.Find(id) ?? throw new InvalidOperationException("Tank not found");
+            tank.Unit = unitsRepository.Get(tank.UnitId) ?? throw new ArgumentException($"Invalid unit id {tank.UnitId}");
 
-            if (existingTank.Id != tank.Id)
-                return;
-            db.Entry(existingTank).CurrentValues.SetValues(tank);
+            db.Entry(existingTank).State = EntityState.Modified;
+
+            existingTank.Name = tank.Name;
+            existingTank.Volume = tank.Volume;
+            existingTank.MaxVolume = tank.MaxVolume;
+            existingTank.Description = tank.Description;
+            existingTank.Name = tank.Name;
         }
 
         public async Task SaveAsync() => await db.SaveChangesAsync();
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposed)
-            {
-                if (disposing)
-                    db.Dispose();
-
-                disposed = true;
-            }
-        }
     }
 }
