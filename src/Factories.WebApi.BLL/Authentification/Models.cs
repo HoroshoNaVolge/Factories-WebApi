@@ -1,4 +1,6 @@
-﻿namespace Factories.WebApi.BLL.Models
+﻿using System.Security.Claims;
+
+namespace Factories.WebApi.BLL.Models
 {
     public class UpdatePasswordModel
     {

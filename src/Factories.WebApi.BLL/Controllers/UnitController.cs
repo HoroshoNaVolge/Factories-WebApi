@@ -15,7 +15,7 @@ namespace Factories.WebApi.BLL.Controllers
     {
         private readonly IMapper mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         private readonly IRepository<Unit> unitsRepository = unitsRepository ?? throw new ArgumentNullException(nameof(unitsRepository));
-
+       
         [HttpGet("all")]
         public async Task<ActionResult<IReadOnlyCollection<UnitDto>>> GetUnits(CancellationToken token)
         {
@@ -36,43 +36,30 @@ namespace Factories.WebApi.BLL.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateUnitAsync(UnitDto unitDto)
+        public IActionResult CreateUnit(Unit unit)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            unitsRepository.CreateAsync(unit);
+            unitsRepository.SaveAsync();
 
-            var unit = mapper.Map<Unit>(unitDto);
-
-            unitsRepository.Create(unit);
-
-            await unitsRepository.SaveAsync();
-
-            return Ok($"Добавлена установка {unit.Name} в {unit?.Factory?.Name}");
+            return Ok();
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateUnit(int id, UnitDto unitDto)
+        public IActionResult UpdateUnit(int id, Unit unit)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var unit = mapper.Map<Unit>(unitDto);
-
             unitsRepository.Update(id, unit);
+            unitsRepository.SaveAsync();
 
-            await unitsRepository.SaveAsync();
-
-            return Ok($"Установка {unit.Name} обновлена");
+            return Ok();
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUnitAsync(int id)
+        public IActionResult DeleteUnit(int id)
         {
             unitsRepository.Delete(id);
+            unitsRepository.SaveAsync();
 
-            await unitsRepository.SaveAsync();
-
-            return Ok($"Установка по номеру {id} удалена");
+            return Ok();
         }
     }
 }

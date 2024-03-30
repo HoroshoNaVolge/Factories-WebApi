@@ -2,7 +2,6 @@
 using Factories.WebApi.BLL.Dto;
 using Factories.WebApi.DAL.Entities;
 using Factories.WebApi.DAL.Interfaces;
-using Factories.WebApi.DAL.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -39,43 +38,33 @@ namespace Factories.WebApi.BLL.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateTankAsync(TankDto tankDto)
+        public IActionResult CreateTank(Tank tank)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            tanksRepository.CreateAsync(tank);
 
-            var tank = mapper.Map<Tank>(tankDto);
+            tanksRepository.SaveAsync();
 
-            tanksRepository.Create(tank);
-
-            await tanksRepository.SaveAsync();
-
-            return Ok($"Создан резервуар {tank.Name} на установке {tank.Unit?.Description}");
+            return Ok();
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateTankAsync(int id, TankDto tankDto)
+        public IActionResult UpdateTank(int id, Tank tank)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var tank = mapper.Map<Tank>(tankDto);
-
             tanksRepository.Update(id, tank);
 
-            await tanksRepository.SaveAsync();
+            tanksRepository.SaveAsync();
 
-            return Ok($"Обновлен {tank.Name}");
+            return Ok();
         }
 
         [HttpDelete]
-        public async Task<IActionResult> DeleteTankAsync(int id)
+        public IActionResult DeleteTank(int id)
         {
             tanksRepository.Delete(id);
 
-            await tanksRepository.SaveAsync();
+            tanksRepository.SaveAsync();
 
-            return Ok($"Удален резервуар под номером {id}");
+            return Ok();
         }
     }
 }

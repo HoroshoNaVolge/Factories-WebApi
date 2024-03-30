@@ -7,13 +7,15 @@ using System.Text;
 
 namespace Factories.WebApi.BLL.Services
 {
-    public class JwtService(JwtConfig? jwtConfig)
+    public class JwtService(string issuer, string audience, string key)
     {
-        private readonly JwtConfig? jwtConfig = jwtConfig;
+        private readonly string _key = key;
+
         public string GenerateJwtToken(IdentityUser user, IList<Claim> additionalClaims, IList<string> roles)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.UTF8.GetBytes(jwtConfig.SecretKey);
+            var key = Encoding.UTF8.GetBytes(_key);
+
 
             var claims = new List<Claim>
         {
@@ -29,12 +31,13 @@ namespace Factories.WebApi.BLL.Services
                 foreach (var role in roles)
                     claims.Add(new Claim(ClaimTypes.Role, role.ToString()));
 
+
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
                 Expires = DateTime.UtcNow.AddHours(2),
-                Issuer = jwtConfig.Issuer,
-                Audience = jwtConfig.Audience,
+                Issuer = issuer,
+                Audience = audience,
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 

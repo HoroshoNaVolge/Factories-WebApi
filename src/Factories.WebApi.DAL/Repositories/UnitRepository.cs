@@ -5,16 +5,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Factories.WebApi.DAL.Repositories
 {
-    public class UnitRepository(FacilitiesDbContext db, IRepository<Factory> factoriesRepository) : IRepository<Unit>
+    public class UnitRepository(FacilitiesDbContext db) : IRepository<Unit>, IDisposable
     {
-        private readonly IRepository<Factory> factoriesRepository = factoriesRepository;
         private readonly FacilitiesDbContext db = db;
-        public void Create(Unit unit)
-        {
-            unit.Factory = factoriesRepository.Get(unit.FactoryId) ?? throw new ArgumentException($"Invalid factory id {unit.FactoryId}");
+        private bool disposed = false;
+        public async Task CreateAsync(Unit item) => await db.Units.AddAsync(item);
 
-            db.Units.Add(unit);
-        }
         public void Delete(int id)
         {
             Unit? item = db.Units.Find(id);
@@ -34,15 +30,26 @@ namespace Factories.WebApi.DAL.Repositories
         {
             Unit? existingUnit = db.Units.Find(id) ?? throw new InvalidOperationException("Unit not found");
 
-            unit.Factory = factoriesRepository.Get(unit.FactoryId) ?? throw new ArgumentException($"Invalid factory id {unit.FactoryId}");
-
-            db.Entry(existingUnit).State = EntityState.Modified;
-
-            existingUnit.Name = unit.Name;
-            existingUnit.Description = unit.Description;
-            existingUnit.FactoryId = unit.FactoryId;
+            db.Entry(existingUnit).CurrentValues.SetValues(unit);
         }
 
         public async Task SaveAsync() => await db.SaveChangesAsync();
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposed)
+            {
+                if (disposing)
+                    db.Dispose();
+
+                disposed = true;
+            }
+        }
     }
 }

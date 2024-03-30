@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Factories.WebApi.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialCreateFacilities : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -33,7 +33,7 @@ namespace Factories.WebApi.DAL.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
-                    FactoryId = table.Column<int>(type: "integer", nullable: false)
+                    FactoryId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -42,8 +42,7 @@ namespace Factories.WebApi.DAL.Migrations
                         name: "FK_Units_Factories_FactoryId",
                         column: x => x.FactoryId,
                         principalTable: "Factories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -54,7 +53,7 @@ namespace Factories.WebApi.DAL.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
-                    UnitId = table.Column<int>(type: "integer", nullable: false),
+                    UnitId = table.Column<int>(type: "integer", nullable: true),
                     Volume = table.Column<double>(type: "double precision", nullable: true),
                     MaxVolume = table.Column<double>(type: "double precision", nullable: true)
                 },
@@ -65,8 +64,7 @@ namespace Factories.WebApi.DAL.Migrations
                         name: "FK_Tanks_Units_UnitId",
                         column: x => x.UnitId,
                         principalTable: "Units",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(

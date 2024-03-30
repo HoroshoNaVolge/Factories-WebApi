@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Factories.WebApi.DAL.Migrations
 {
     [DbContext(typeof(FacilitiesDbContext))]
-    [Migration("20240330200147_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20240327174117_InitialCreateFacilities")]
+    partial class InitialCreateFacilities
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -63,7 +63,7 @@ namespace Factories.WebApi.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("UnitId")
+                    b.Property<int?>("UnitId")
                         .HasColumnType("integer");
 
                     b.Property<double?>("Volume")
@@ -87,7 +87,7 @@ namespace Factories.WebApi.DAL.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<int>("FactoryId")
+                    b.Property<int?>("FactoryId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Name")
@@ -105,9 +105,7 @@ namespace Factories.WebApi.DAL.Migrations
                 {
                     b.HasOne("Factories.WebApi.DAL.Entities.Unit", "Unit")
                         .WithMany()
-                        .HasForeignKey("UnitId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UnitId");
 
                     b.Navigation("Unit");
                 });
@@ -116,9 +114,7 @@ namespace Factories.WebApi.DAL.Migrations
                 {
                     b.HasOne("Factories.WebApi.DAL.Entities.Factory", "Factory")
                         .WithMany()
-                        .HasForeignKey("FactoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("FactoryId");
 
                     b.Navigation("Factory");
                 });
