@@ -15,7 +15,7 @@ namespace Factories.WebApi.BLL.Controllers
     {
         private readonly IMapper mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         private readonly IRepository<Unit> unitsRepository = unitsRepository ?? throw new ArgumentNullException(nameof(unitsRepository));
-       
+
         [HttpGet("all")]
         public async Task<ActionResult<IReadOnlyCollection<UnitDto>>> GetUnits(CancellationToken token)
         {
@@ -36,30 +36,43 @@ namespace Factories.WebApi.BLL.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateUnit(Unit unit)
+        public async Task<IActionResult> CreateUnitAsync(UnitDto unitDto)
         {
-            unitsRepository.CreateAsync(unit);
-            unitsRepository.SaveAsync();
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            return Ok();
+            var unit = mapper.Map<Unit>(unitDto);
+
+            unitsRepository.Create(unit);
+
+            await unitsRepository.SaveAsync();
+
+            return Ok($"Добавлена установка {unit.Name} в {unit?.Factory?.Name}");
         }
 
         [HttpPut]
-        public IActionResult UpdateUnit(int id, Unit unit)
+        public async Task<IActionResult> UpdateUnit(int id, UnitDto unitDto)
         {
-            unitsRepository.Update(id, unit);
-            unitsRepository.SaveAsync();
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            return Ok();
+            var unit = mapper.Map<Unit>(unitDto);
+
+            unitsRepository.Update(id, unit);
+
+            await unitsRepository.SaveAsync();
+
+            return Ok($"Установка {unit.Name} обновлена");
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteUnit(int id)
+        public async Task<IActionResult> DeleteUnitAsync(int id)
         {
             unitsRepository.Delete(id);
-            unitsRepository.SaveAsync();
 
-            return Ok();
+            await unitsRepository.SaveAsync();
+
+            return Ok($"Установка по номеру {id} удалена");
         }
     }
 }

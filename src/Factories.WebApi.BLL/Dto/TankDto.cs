@@ -1,8 +1,13 @@
-﻿namespace Factories.WebApi.BLL.Dto
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+
+namespace Factories.WebApi.BLL.Dto
 {
     public class TankDto
     {
-        public required int Id { get; init; }
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; private set; }
         public required string Name { get; set; }
         public string? Description { get; set; }
         public int? UnitId { get; set; }
