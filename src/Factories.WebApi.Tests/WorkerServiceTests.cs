@@ -20,8 +20,8 @@ namespace Factories.WebApi.Tests
             // Arrange
             var tanks = new List<Tank>
             {
-                new Tank {Name = "Tank1", Volume = 150, MaxVolume = 200 },
-                new Tank {Name = "Tank2", Volume = 150, MaxVolume = 300 }
+                new() {Name = "Tank1", Volume = 150, MaxVolume = 200, Unit =new Unit(){Name="Test", Factory = new Factory(){ Name="Test"} } },
+                new() {Name = "Tank2", Volume = 150, MaxVolume = 300, Unit =new Unit(){Name="Test", Factory = new Factory(){ Name="Test"} } }
             };
 
             var tankRepositoryMock = new Mock<IRepository<Tank>>();
@@ -34,9 +34,8 @@ namespace Factories.WebApi.Tests
 
             // Assert
             foreach (var tank in tanks)
-            {
-                Assert.IsTrue(tank.Volume >= 0 && tank.Volume <= tank.MaxVolume, $"Tank volume {tank.Name} is not within valid range.");
-            }
+                Assert.That(tank.Volume >= 0 && tank.Volume <= tank.MaxVolume, Is.True, $"Tank volume {tank.Name} is not within valid range.");
+
         }
     }
 
@@ -47,7 +46,7 @@ namespace Factories.WebApi.Tests
         public void TankVolume_RemainsUnchanged_WhenRandomChangeIsZero()
         {
             // Arrange
-            var tank = new Tank {Name="1", Volume = 100, MaxVolume = 200, Unit=new Unit()};
+            var tank = new Tank { Name = "1", Volume = 100, MaxVolume = 200, Unit = new Unit() { Name = "Test", Factory = new Factory() { Name = "Test" } } };
             var randomChange = 0;
             var originalVolume = tank.Volume;
 
@@ -55,7 +54,7 @@ namespace Factories.WebApi.Tests
             UpdateTankVolume(tank, randomChange);
 
             // Assert
-            Assert.AreEqual(originalVolume, tank.Volume);
+            Assert.That(tank.Volume, Is.EqualTo(originalVolume));
         }
 
         [TestCase(0.1)]
@@ -64,14 +63,14 @@ namespace Factories.WebApi.Tests
         public void TankVolume_Increases_WhenRandomChangeIsPositive(double randomChange)
         {
             // Arrange
-            var tank = new Tank { Id = 1, Name = "1", Volume = 100, MaxVolume = 200 };
+            var tank = new Tank { Name = "1", Volume = 100, MaxVolume = 200, Unit = new Unit() { Name = "Test", Factory = new Factory() { Name = "Test" } } };
             var originalVolume = tank.Volume;
 
             // Act
             UpdateTankVolume(tank, randomChange);
 
             // Assert
-            Assert.Greater(tank.Volume, originalVolume);
+            Assert.That(tank.Volume, Is.GreaterThan(originalVolume));
         }
 
         [TestCase(-0.1)]
@@ -80,14 +79,14 @@ namespace Factories.WebApi.Tests
         public void TankVolume_Decreases_WhenRandomChangeIsNegative(double randomChange)
         {
             // Arrange
-            var tank = new Tank { Id = 1, Name = "1", Volume = 100, MaxVolume = 200 };
+            var tank = new Tank { Name = "1", Volume = 100, MaxVolume = 200, Unit = new Unit() { Name = "Test", Factory = new Factory() { Name = "Test" } } };
             var originalVolume = tank.Volume;
 
             // Act
             UpdateTankVolume(tank, randomChange);
 
             // Assert
-            Assert.Less(tank.Volume, originalVolume);
+            Assert.That(tank.Volume, Is.LessThan(originalVolume));
         }
 
         [TestCase(1)]
@@ -95,13 +94,13 @@ namespace Factories.WebApi.Tests
         public void TankVolume_ReachesMaxOrMin_WhenRandomChangeIsMaxOrMin(double randomChange)
         {
             // Arrange
-            var tank = new Tank { Id = 1, Name = "1", Volume = 100, MaxVolume = 200 };
+            var tank = new Tank { Name = "1", Volume = 100, MaxVolume = 200, Unit = new Unit() { Name = "Test", Factory = new Factory() { Name = "Test" } } };
 
             // Act
             UpdateTankVolume(tank, randomChange);
 
             // Assert
-            Assert.AreEqual(randomChange > 0 ? tank.MaxVolume : 0, tank.Volume);
+            Assert.That(tank.Volume, Is.EqualTo(randomChange > 0 ? tank.MaxVolume : 0));
         }
 
         [TestCase(0.1)]
@@ -109,20 +108,20 @@ namespace Factories.WebApi.Tests
         public void TankVolume_ChangesBySmallAmount_WhenRandomChangeIsCloseToEdge(double randomChange)
         {
             // Arrange
-            var tank = new Tank { Id = 1, Name = "1", Volume = 100, MaxVolume = 200 };
+            var tank = new Tank { Name = "1", Volume = 100, MaxVolume = 200, Unit = new Unit() { Name = "Test", Factory = new Factory() { Name = "Test" } } };
             var originalVolume = tank.Volume;
 
             // Act
             UpdateTankVolume(tank, randomChange);
 
             // Assert
-            Assert.AreEqual(originalVolume + randomChange * originalVolume, tank.Volume);
+            Assert.That(tank.Volume, Is.EqualTo(originalVolume + randomChange * originalVolume));
         }
 
-        private void UpdateTankVolume(Tank tank, double randomChange)
+        private static void UpdateTankVolume(Tank tank, double randomChange)
         {
             tank.Volume += tank.Volume * randomChange;
-            // Ensure volume stays within bounds
+
             if (tank.Volume > tank.MaxVolume)
                 tank.Volume = tank.MaxVolume;
             else if (tank.Volume < 0)

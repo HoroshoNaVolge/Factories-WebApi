@@ -14,7 +14,6 @@ namespace Factories.WebApi.BLL.Controllers
         private readonly JwtService jwtService = jwtService ?? throw new ArgumentNullException(nameof(jwtService));
         private readonly UserManager<IdentityUser> userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
 
-
         [HttpPost("auth")]
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
@@ -86,7 +85,6 @@ namespace Factories.WebApi.BLL.Controllers
                 return Ok($"Password for user {model.Login} updated");
 
             return BadRequest(changeResult.Errors);
-
         }
 
         [HttpPost("register")]
@@ -111,6 +109,7 @@ namespace Factories.WebApi.BLL.Controllers
 
                 return Ok("Successfully registered");
             }
+
             foreach (var error in result.Errors)
                 ModelState.AddModelError("", error.Description);
 
@@ -125,7 +124,6 @@ namespace Factories.WebApi.BLL.Controllers
 
             if (user == null)
                 return NotFound();
-
 
             var result = await userManager.DeleteAsync(user);
 

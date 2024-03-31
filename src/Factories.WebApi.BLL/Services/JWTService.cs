@@ -7,9 +7,9 @@ using System.Text;
 
 namespace Factories.WebApi.BLL.Services
 {
-    public class JwtService(JwtConfig? jwtConfig)
+    public class JwtService(JwtConfig jwtConfig)
     {
-        private readonly JwtConfig? jwtConfig = jwtConfig;
+        private readonly JwtConfig jwtConfig = jwtConfig;
         public string GenerateJwtToken(IdentityUser user, IList<Claim> additionalClaims, IList<string> roles)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -18,8 +18,8 @@ namespace Factories.WebApi.BLL.Services
             var claims = new List<Claim>
         {
             new(ClaimTypes.NameIdentifier, user.Id),
-            new(ClaimTypes.Email, user.Email),
-            new(ClaimTypes.Name, user.UserName),
+            new(ClaimTypes.Email, user.Email!),
+            new(ClaimTypes.Name, user.UserName!),
         };
 
             if (additionalClaims != null && additionalClaims.Any())
