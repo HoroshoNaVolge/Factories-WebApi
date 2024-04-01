@@ -1,4 +1,4 @@
-﻿using Factories.WebApi.BLL.Models;
+﻿using Factories.WebApi.BLL.Database;
 using Factories.WebApi.BLL.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -46,7 +46,7 @@ namespace Factories.WebApi.BLL.Controllers
             if (currentUser == null)
                 return NotFound();
 
-            return Ok(new CurrentUserRespose { Id = currentUser.Id, Email = currentUser.Email!, Name = currentUser.UserName! });
+            return Ok(new CurrentUserResponse { Id = currentUser.Id, Email = currentUser.Email!, Name = currentUser.UserName! });
         }
 
         [HttpPost("password/update")]

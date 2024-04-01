@@ -10,6 +10,7 @@ namespace Factories.WebApi.Tests
     {
         private Mock<IRandomService> mockRandomService;
         private Mock<IRepository<Tank>> tankRepositoryMock;
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Structure", "NUnit1032:An IDisposable field/property should be Disposed in a TearDown method", Justification = "<Ожидание>")]
         private WorkerService workerService; // игнорирую предупреждение, т.к. не требуется особым образом диспозить workerService
 
         [SetUp]

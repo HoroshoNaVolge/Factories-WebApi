@@ -9,16 +9,17 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Factories.WebApi.DAL.Entities;
-using Factories.WebApi.BLL.Authentication;
+using Factories.WebApi.BLL.Configuration;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
-using Microsoft.IdentityModel.Protocols.Configuration;
+using Microsoft.Extensions.Options;
+using Factories.WebApi.BLL.Database;
 
 namespace Factories.WebApi.BLL
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -28,9 +29,15 @@ namespace Factories.WebApi.BLL
 
             builder.Services.AddScoped<RoleManager<IdentityRole>>();
 
-            // потому что при ошибочном JwtConfig выполнять программу дальше нет смысла
-            var checkForValidOptions = builder.Configuration.GetSection(JwtConfig.SectionName).Get<JwtConfig>() ?? throw new InvalidConfigurationException(nameof(JwtConfig));
-            builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection(JwtConfig.SectionName));
+            var jwtOptionsSectionName = builder.Configuration.GetSection(JwtOptions.SectionName);
+            var seedDataOptionsSectionName = builder.Configuration.GetSection(SeedDataOptions.SectionName);
+
+            var checkForValidJwtOptions = jwtOptionsSectionName.Get<JwtOptions>() ?? throw new InvalidOperationException(nameof(JwtOptions));
+
+            builder.Services.Configure<JwtOptions>(jwtOptionsSectionName);
+
+            var checkForValidSeedDataOptions = seedDataOptionsSectionName.Get<SeedDataOptions>() ?? throw new InvalidOperationException(nameof(SeedDataOptions));
+            builder.Services.Configure<SeedDataOptions>(seedDataOptionsSectionName);
 
             builder.Services.AddScoped<IJwtService, JwtService>();
 
@@ -99,7 +106,6 @@ namespace Factories.WebApi.BLL
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Your API", Version = "v1" });
 
-                // Добавьте определение безопасности (security definition) для JWT Bearer token
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Description = "JWT Authorization header using the Bearer scheme. Enter 'Bearer' [space] and then your token in the text input below.",
@@ -109,7 +115,6 @@ namespace Factories.WebApi.BLL
                     Scheme = "Bearer"
                 });
 
-                // Добавьте требование безопасности, чтобы использовать определение безопасности
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
@@ -135,6 +140,8 @@ namespace Factories.WebApi.BLL
                 app.UseSwaggerUI();
             }
 
+            await EnsureDatabaseCreatedAsync(app);
+
             app.UseHttpsRedirection();
 
             app.UseAuthentication();
@@ -144,6 +151,21 @@ namespace Factories.WebApi.BLL
 
             app.Run();
 
+        }
+
+        // Для автоматической миграции БД при её отсутствии при запуске приложения. Добавляем админа с ролью и клеймами 
+        private static async Task EnsureDatabaseCreatedAsync(WebApplication app)
+        {
+            using var scope = app.Services.CreateScope();
+            var services = scope.ServiceProvider;
+            var dbContext = services.GetRequiredService<UsersDbContext>();
+            var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
+            var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+            var options = services.GetRequiredService<IOptions<SeedDataOptions>>();
+
+            await dbContext.Database.MigrateAsync();
+
+            await UsersDbInitializer.SeedData(userManager, roleManager, options);
         }
     }
 }

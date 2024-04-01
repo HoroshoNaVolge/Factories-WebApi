@@ -1,4 +1,4 @@
-﻿namespace Factories.WebApi.BLL.Models
+﻿namespace Factories.WebApi.BLL.Database
 {
     public class UpdatePasswordModel
     {
@@ -39,9 +39,9 @@
         public required string Token { get; set; }
     }
 
-    public class CurrentUserRespose
+    public class CurrentUserResponse
     {
-        public required string Id { get; set; } // потому что в БД Id текстовый
+        public required string Id { get; set; } // потому что в БД GUID
         public required string Name { get; set; }
         public required string Email { get; set; }
     }

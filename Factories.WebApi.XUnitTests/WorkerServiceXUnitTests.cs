@@ -1,16 +1,9 @@
-﻿using Factories.WebApi.BLL.Services;
+using Factories.WebApi.BLL.Services;
 using Factories.WebApi.DAL.Entities;
 using Factories.WebApi.DAL.Interfaces;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
-using Assert = Xunit.Assert;
 
-namespace Factories.WebApi.Tests
+namespace Factories.WebApi.XUnitTests
 {
     public class WorkerServiceXUnitTests
     {

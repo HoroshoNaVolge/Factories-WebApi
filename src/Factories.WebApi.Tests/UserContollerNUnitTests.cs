@@ -1,12 +1,12 @@
 ﻿using Moq;
 using Microsoft.AspNetCore.Identity;
 using Factories.WebApi.BLL.Controllers;
-using Factories.WebApi.BLL.Models;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Factories.WebApi.BLL.Services;
+using Factories.WebApi.BLL.Database;
 
-namespace Factories.WebApi.Tests
+namespace Factories.WebApi.NUnitTests
 {
     [TestFixture]
     public class UserControllerTests

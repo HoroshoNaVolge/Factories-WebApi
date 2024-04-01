@@ -1,4 +1,4 @@
-﻿using Factories.WebApi.BLL.Authentication;
+﻿using Factories.WebApi.BLL.Configuration;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -13,13 +13,13 @@ namespace Factories.WebApi.BLL.Services
         string GenerateJwtToken(IdentityUser user, IList<Claim> additionalClaims, IList<string> roles);
     }
 
-    public class JwtService(IOptions<JwtConfig> jwtConfig) : IJwtService
+    public class JwtService(IOptions<JwtOptions> jwtOptions) : IJwtService
     {
-        private readonly IOptions<JwtConfig> jwtConfig = jwtConfig;
+        private readonly IOptions<JwtOptions> jwtOptions = jwtOptions;
         public string GenerateJwtToken(IdentityUser user, IList<Claim> additionalClaims, IList<string> roles)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.UTF8.GetBytes(jwtConfig.Value.SecretKey);
+            var key = Encoding.UTF8.GetBytes(jwtOptions.Value.SecretKey);
 
             var claims = new List<Claim>
         {
@@ -39,8 +39,8 @@ namespace Factories.WebApi.BLL.Services
             {
                 Subject = new ClaimsIdentity(claims),
                 Expires = DateTime.UtcNow.AddHours(2),
-                Issuer = jwtConfig.Value.Issuer,
-                Audience = jwtConfig.Value.Audience,
+                Issuer = jwtOptions.Value.Issuer,
+                Audience = jwtOptions.Value.Audience,
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 

@@ -1,6 +1,6 @@
-﻿namespace Factories.WebApi.BLL.Authentication
+﻿namespace Factories.WebApi.BLL.Configuration
 {
-    public sealed class JwtConfig
+    public sealed class JwtOptions
     {
         public const string SectionName = "Jwt";
 

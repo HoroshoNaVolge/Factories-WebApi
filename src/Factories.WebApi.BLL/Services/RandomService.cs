@@ -1,6 +1,4 @@
-﻿using Microsoft.IdentityModel.Tokens;
-
-namespace Factories.WebApi.BLL.Services
+﻿namespace Factories.WebApi.BLL.Services
 {
     public interface IRandomService
     {

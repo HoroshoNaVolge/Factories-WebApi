@@ -29,8 +29,6 @@ namespace Factories.WebApi.BLL.Services
         {
             var tanks = await tanksRepository.GetAllAsync(stoppingToken)!;
 
-            var random = new Random();
-
             foreach (var tank in tanks)
             {
                 // Генерация случайного числа в пределах от -0.1 до 0.1
