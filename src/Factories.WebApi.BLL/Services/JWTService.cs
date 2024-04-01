@@ -7,7 +7,12 @@ using System.Text;
 
 namespace Factories.WebApi.BLL.Services
 {
-    public class JwtService(JwtConfig jwtConfig)
+    public interface IJwtService
+    {
+        string GenerateJwtToken(IdentityUser user, IList<Claim> additionalClaims, IList<string> roles);
+    }
+
+    public class JwtService(JwtConfig jwtConfig) : IJwtService
     {
         private readonly JwtConfig jwtConfig = jwtConfig;
         public string GenerateJwtToken(IdentityUser user, IList<Claim> additionalClaims, IList<string> roles)

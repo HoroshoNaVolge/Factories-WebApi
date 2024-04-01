@@ -32,10 +32,10 @@ namespace Factories.WebApi.BLL
 
             var jwtConfig = builder.Configuration.GetSection(JwtConfig.SectionName).Get<JwtConfig>()
                          ?? throw new InvalidOperationException($"Missing required {JwtConfig.SectionName} config section!");
-           
+
             builder.Services.AddSingleton(jwtConfig);
 
-            builder.Services.AddScoped<JwtService>();
+            builder.Services.AddScoped<IJwtService, JwtService>();
 
             builder.Services.AddAuthentication(options =>
             {

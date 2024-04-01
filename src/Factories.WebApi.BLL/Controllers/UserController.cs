@@ -9,9 +9,9 @@ namespace Factories.WebApi.BLL.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class UserController(JwtService jwtService, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager) : ControllerBase
+    public class UserController(IJwtService jwtService, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager) : ControllerBase
     {
-        private readonly JwtService jwtService = jwtService ?? throw new ArgumentNullException(nameof(jwtService));
+        private readonly IJwtService jwtService = jwtService ?? throw new ArgumentNullException(nameof(jwtService));
         private readonly UserManager<IdentityUser> userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
 
         [HttpPost("auth")]
@@ -20,7 +20,10 @@ namespace Factories.WebApi.BLL.Controllers
         {
             var user = await userManager.FindByNameAsync(model.Username);
 
-            if (user != null && await userManager.CheckPasswordAsync(user, model.Password))
+            if (user is null)
+                return NotFound("User not found");
+
+            if (await userManager.CheckPasswordAsync(user, model.Password))
             {
                 var userClaims = await userManager.GetClaimsAsync(user);
 
@@ -28,10 +31,10 @@ namespace Factories.WebApi.BLL.Controllers
 
                 var token = jwtService.GenerateJwtToken(user, userClaims, userRoles);
 
-                return Ok(new { Token = token });
+                return Ok(new LoginResponse { Token = token });
             }
 
-            return NotFound("User login or password incorrect");
+            return Unauthorized("Incorrect password");
         }
 
         [HttpGet("current")]
@@ -43,12 +46,7 @@ namespace Factories.WebApi.BLL.Controllers
             if (currentUser == null)
                 return NotFound();
 
-            return Ok(new
-            {
-                currentUser.Id,
-                currentUser.UserName,
-                currentUser.Email,
-            });
+            return Ok(new CurrentUserRespose { Id = currentUser.Id, Email = currentUser.Email!, Name = currentUser.UserName! });
         }
 
         [HttpPost("password/update")]
@@ -65,7 +63,7 @@ namespace Factories.WebApi.BLL.Controllers
 
             // Если текущий пользователь не администратор и пытается изменить пароль другого пользователя, возвращаем ошибку
             if (!isAdmin && targetUser.UserName != User.Identity.Name)
-                return StatusCode(403,"You do not have permission to change other users' passwords");
+                return StatusCode(403, "You do not have permission to change other users' passwords");
 
             if (targetUser.UserName == User.Identity.Name)
             {
@@ -104,10 +102,15 @@ namespace Factories.WebApi.BLL.Controllers
             {
                 await userManager.AddToRoleAsync(user, model.Role);
 
-                foreach (var claim in model.Claims)
-                    await userManager.AddClaimAsync(user, new Claim(claim.Type, claim.Value));
+                if (model.Claims?.Any() == true)
+                {
+                    foreach (var claim in model.Claims)
+                        await userManager.AddClaimAsync(user, new Claim(claim.Type, claim.Value));
 
-                return Ok("Successfully registered");
+                    return Ok("Successfully registered with claims");
+                }
+
+                return Ok("Successfully registered without claims");
             }
 
             foreach (var error in result.Errors)

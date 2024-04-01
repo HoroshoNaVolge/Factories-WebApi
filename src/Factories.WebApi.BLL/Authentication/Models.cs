@@ -33,4 +33,16 @@
         public required string Type { get; set; }
         public required string Value { get; set; }
     }
+
+    public class LoginResponse
+    {
+        public required string Token { get; set; }
+    }
+
+    public class CurrentUserRespose
+    {
+        public required string Id { get; set; } // потому что в БД Id текстовый
+        public required string Name { get; set; }
+        public required string Email { get; set; }
+    }
 }
