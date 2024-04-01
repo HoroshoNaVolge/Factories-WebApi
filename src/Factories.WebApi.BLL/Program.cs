@@ -153,7 +153,6 @@ namespace Factories.WebApi.BLL
 
         }
 
-        // Для автоматической миграции БД при её отсутствии при запуске приложения. Добавляем админа с ролью и клеймами 
         private static async Task EnsureDatabaseCreatedAsync(WebApplication app)
         {
             using var scope = app.Services.CreateScope();
