@@ -12,8 +12,7 @@ using Factories.WebApi.DAL.Entities;
 using Factories.WebApi.BLL.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Protocols.Configuration;
 
 namespace Factories.WebApi.BLL
 {
@@ -29,11 +28,9 @@ namespace Factories.WebApi.BLL
 
             builder.Services.AddScoped<RoleManager<IdentityRole>>();
 
-
-            var jwtConfig = builder.Configuration.GetSection(JwtConfig.SectionName).Get<JwtConfig>()
-                         ?? throw new InvalidOperationException($"Missing required {JwtConfig.SectionName} config section!");
-
-            builder.Services.AddSingleton(jwtConfig);
+            // потому что при ошибочном JwtConfig выполнять программу дальше нет смысла
+            var checkForValidOptions = builder.Configuration.GetSection(JwtConfig.SectionName).Get<JwtConfig>() ?? throw new InvalidConfigurationException(nameof(JwtConfig));
+            builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection(JwtConfig.SectionName));
 
             builder.Services.AddScoped<IJwtService, JwtService>();
 
@@ -51,27 +48,25 @@ namespace Factories.WebApi.BLL
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = builder.Configuration["Jwt:Issuer"],
                     ValidAudience = builder.Configuration["Jwt:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("Jwt:SecretKey").Value))
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"]!))
                 };
             });
-            builder.Services.AddAuthorization(options =>
-            {
-                options.AddPolicy("AdminOrUnitOperatorPolicy", policy =>
+
+            builder.Services.AddAuthorizationBuilder()
+                .AddPolicy("AdminOrUnitOperatorPolicy", policy =>
                 {
                     policy.RequireAssertion(context =>
                     {
                         return context.User.IsInRole("Admin") || context.User.HasClaim(c => c.Type == "UnitOperator");
                     });
-                });
-                options.AddPolicy("AdminOrTankOperatorPolicy", policy =>
+                })
+                .AddPolicy("AdminOrTankOperatorPolicy", policy =>
                 {
                     policy.RequireAssertion(context =>
                     {
                         return context.User.IsInRole("Admin") || context.User.HasClaim(c => c.Type == "TankOperator");
                     });
                 });
-            }
-            );
 
             builder.Services.AddDbContext<FacilitiesDbContext>(options =>
                           options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -83,6 +78,8 @@ namespace Factories.WebApi.BLL
                              .AddScoped<IRepository<Factory>, FactoryRepository>();
 
             builder.Services.AddAutoMapper(typeof(MappingProfile));
+
+            builder.Services.AddSingleton<IRandomService, RandomService>();
 
             builder.Services.AddHostedService<WorkerService>();
 

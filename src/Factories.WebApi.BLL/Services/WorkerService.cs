@@ -1,13 +1,13 @@
 ﻿using Factories.WebApi.DAL.Entities;
 using Factories.WebApi.DAL.Interfaces;
-using Factories.WebApi.DAL.Repositories;
 using Serilog;
 
 namespace Factories.WebApi.BLL.Services
 {
-    public class WorkerService(IServiceScopeFactory serviceScopeFactory) : BackgroundService
+    public class WorkerService(IServiceScopeFactory serviceScopeFactory, IRandomService randomService) : BackgroundService
     {
         private readonly IServiceScopeFactory serviceScopeFactory = serviceScopeFactory;
+        private readonly IRandomService randomService = randomService;
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -34,7 +34,7 @@ namespace Factories.WebApi.BLL.Services
             foreach (var tank in tanks)
             {
                 // Генерация случайного числа в пределах от -0.1 до 0.1
-                var randomChange = (random.NextDouble() - 0.5) * 0.2;
+                var randomChange = (randomService.NextDouble() - 0.5) * 0.2;
 
                 var changeValue = tank.Volume * randomChange;
 

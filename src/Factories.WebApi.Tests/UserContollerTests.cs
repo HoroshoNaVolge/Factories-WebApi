@@ -1,14 +1,10 @@
-﻿using NUnit.Framework;
-using Moq;
+﻿using Moq;
 using Microsoft.AspNetCore.Identity;
-using System.Threading.Tasks;
 using Factories.WebApi.BLL.Controllers;
 using Factories.WebApi.BLL.Models;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using Factories.WebApi.BLL.Services;
-using Factories.WebApi.BLL.Authentication;
 
 namespace Factories.WebApi.Tests
 {
@@ -24,9 +20,9 @@ namespace Factories.WebApi.Tests
         public void Setup()
         {
             userManagerMock = new Mock<UserManager<IdentityUser>>(
-                Mock.Of<IUserStore<IdentityUser>>(), null, null, null, null, null, null, null, null);
+                Mock.Of<IUserStore<IdentityUser>>(), null!, null!, null!, null!, null!, null!, null!, null!);
             roleManagerMock = new Mock<RoleManager<IdentityRole>>(
-                Mock.Of<IRoleStore<IdentityRole>>(), null, null, null, null);
+                Mock.Of<IRoleStore<IdentityRole>>(), null!, null!, null!, null!);
             jwtServiceMock = new Mock<IJwtService>();
 
             controller = new UserController(jwtServiceMock.Object, userManagerMock.Object, roleManagerMock.Object);

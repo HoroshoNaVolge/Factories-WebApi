@@ -62,10 +62,10 @@ namespace Factories.WebApi.BLL.Controllers
             var isAdmin = User.IsInRole("Admin");
 
             // Если текущий пользователь не администратор и пытается изменить пароль другого пользователя, возвращаем ошибку
-            if (!isAdmin && targetUser.UserName != User.Identity.Name)
+            if (!isAdmin && targetUser.UserName != User.Identity!.Name)
                 return StatusCode(403, "You do not have permission to change other users' passwords");
 
-            if (targetUser.UserName == User.Identity.Name)
+            if (targetUser.UserName == User.Identity!.Name)
             {
                 var result = await userManager.ChangePasswordAsync(targetUser, model.CurrentPassword, model.NewPassword);
 
