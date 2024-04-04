@@ -9,11 +9,11 @@ namespace Factories.WebApi.DAL.Entities
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; private set; }
+        public int Id { get; set; }
         public required string Name { get; set; }
         public string? Description { get; set; }
         public int FactoryId { get; set; }
 
-        public required Factory Factory { get; set; }
+        public Factory? Factory { get; set; }
     }
 }

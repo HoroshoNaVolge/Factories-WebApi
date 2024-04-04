@@ -10,8 +10,7 @@ namespace Factories.WebApi.Tests
     {
         private Mock<IRandomService> mockRandomService;
         private Mock<IRepository<Tank>> tankRepositoryMock;
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Structure", "NUnit1032:An IDisposable field/property should be Disposed in a TearDown method", Justification = "<Ожидание>")]
-        private WorkerService workerService; // игнорирую предупреждение, т.к. не требуется особым образом диспозить workerService
+        private WorkerService workerService;
 
         [SetUp]
         public void Setup()
@@ -20,6 +19,9 @@ namespace Factories.WebApi.Tests
             tankRepositoryMock = new Mock<IRepository<Tank>>();
             workerService = new WorkerService(null!, mockRandomService.Object);
         }
+
+        [TearDown]
+        public void Teardown() { workerService.Dispose(); }
 
         [Test]
         public async Task UpdateAllVolumesRandomlyAsync_VolumeDecreasesByMinimum_WhenRandomIsMinimum()

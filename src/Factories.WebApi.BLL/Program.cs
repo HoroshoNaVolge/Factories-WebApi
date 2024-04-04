@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Factories.WebApi.DAL.EF;
 using Factories.WebApi.DAL.Interfaces;
 using Factories.WebApi.DAL.Repositories;
@@ -12,8 +12,8 @@ using Factories.WebApi.DAL.Entities;
 using Factories.WebApi.BLL.Configuration;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
-using Microsoft.Extensions.Options;
 using Factories.WebApi.BLL.Database;
+using System.Security.Claims;
 
 namespace Factories.WebApi.BLL
 {
@@ -29,15 +29,11 @@ namespace Factories.WebApi.BLL
 
             builder.Services.AddScoped<RoleManager<IdentityRole>>();
 
-            var jwtOptionsSectionName = builder.Configuration.GetSection(JwtOptions.SectionName);
-            var seedDataOptionsSectionName = builder.Configuration.GetSection(SeedDataOptions.SectionName);
+            var jwtOptionsSection = builder.Configuration.GetSection(JwtOptions.SectionName);
 
-            var checkForValidJwtOptions = jwtOptionsSectionName.Get<JwtOptions>() ?? throw new InvalidOperationException(nameof(JwtOptions));
+            var checkForValidJwtOptions = jwtOptionsSection.Get<JwtOptions>() ?? throw new InvalidOperationException($"Config section {jwtOptionsSection} must be set up");
 
-            builder.Services.Configure<JwtOptions>(jwtOptionsSectionName);
-
-            var checkForValidSeedDataOptions = seedDataOptionsSectionName.Get<SeedDataOptions>() ?? throw new InvalidOperationException(nameof(SeedDataOptions));
-            builder.Services.Configure<SeedDataOptions>(seedDataOptionsSectionName);
+            builder.Services.Configure<JwtOptions>(jwtOptionsSection);
 
             builder.Services.AddScoped<IJwtService, JwtService>();
 
@@ -140,7 +136,7 @@ namespace Factories.WebApi.BLL
                 app.UseSwaggerUI();
             }
 
-            await EnsureDatabaseCreatedAsync(app);
+            await EnsureDefaultAdminCreated(app);
 
             app.UseHttpsRedirection();
 
@@ -152,19 +148,47 @@ namespace Factories.WebApi.BLL
             app.Run();
 
         }
-
-        private static async Task EnsureDatabaseCreatedAsync(WebApplication app)
+        
+        //Потому-что в OnModelCreating не добавить роль и клеймы через UserManager асинхронно
+        private static async Task EnsureDefaultAdminCreated(WebApplication app)
         {
             using var scope = app.Services.CreateScope();
             var services = scope.ServiceProvider;
             var dbContext = services.GetRequiredService<UsersDbContext>();
+
+            if (!dbContext.Database.CanConnect())
+                throw new DbConnectException("Не удалось подключиться к базе данных, проверьте наличие базы данных и строку подключения");
+
             var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
-            var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-            var options = services.GetRequiredService<IOptions<SeedDataOptions>>();
+            
+            //Потому что UserName может измениться позже
+            if (await userManager.FindByIdAsync("fe342990-c53a-4bb9-89b6-4b4482e956fb") == null)
+            {
+                var user = new IdentityUser
+                {
+                    Id = "fe342990-c53a-4bb9-89b6-4b4482e956fb",
+                    UserName = "Admin",
+                    Email = "admin@example.com",
+                    EmailConfirmed = true
+                };
 
-            await dbContext.Database.MigrateAsync();
+                var result = await userManager.CreateAsync(user);
 
-            await UsersDbInitializer.SeedData(userManager, roleManager, options);
+                if (result.Succeeded)
+                {
+                    // Хэш соответствует паролю P@ssw0rd
+                    string passwordHash = "AQAAAAIAAYagAAAAENHAMmgih8HUHvasMFLvvPqwmV/eEMdj8+d8hvvQ79SiWNGomApGcJe65AHTWwUFRQ==";
+
+                    user.PasswordHash = passwordHash;
+
+                    await userManager.UpdateAsync(user);
+
+                    await userManager.AddToRoleAsync(user, "Admin");
+
+                    await userManager.AddClaimAsync(user, new Claim("UnitOperator", "true"));
+                    await userManager.AddClaimAsync(user, new Claim("TankOperator", "true"));
+                }
+            }
         }
     }
 }

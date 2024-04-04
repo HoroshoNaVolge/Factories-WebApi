@@ -7,7 +7,7 @@ namespace Factories.WebApi.DAL.Entities
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; private set; }
+        public int Id { get; set; } // убираем private для возможности явной установки Id при первоначальной миграции БД
         public required string Name { get; set; }
         public string? Description { get; set; }
     }

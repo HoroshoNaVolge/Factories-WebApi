@@ -40,6 +40,20 @@ namespace Factories.WebApi.DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Factories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "Первый нефтеперерабатывающий завод",
+                            Name = "НПЗ№1"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "Второй нефтеперерабатывающий завод",
+                            Name = "НПЗ№2"
+                        });
                 });
 
             modelBuilder.Entity("Factories.WebApi.DAL.Entities.Tank", b =>
@@ -71,6 +85,62 @@ namespace Factories.WebApi.DAL.Migrations
                     b.HasIndex("UnitId");
 
                     b.ToTable("Tanks");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "Надземный-вертикальный",
+                            MaxVolume = 2000.0,
+                            Name = "Резервуар 1",
+                            UnitId = 1,
+                            Volume = 1500.0
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "Надземный-горизонтальный",
+                            MaxVolume = 3000.0,
+                            Name = "Резервуар 2",
+                            UnitId = 1,
+                            Volume = 2500.0
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "Надземный-горизонтальный",
+                            MaxVolume = 3000.0,
+                            Name = "Резервуар 3",
+                            UnitId = 2,
+                            Volume = 3000.0
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Description = "Надземный-вертикальный",
+                            MaxVolume = 3000.0,
+                            Name = "Резервуар 4",
+                            UnitId = 2,
+                            Volume = 3000.0
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Description = "Подземный-двустенный",
+                            MaxVolume = 5000.0,
+                            Name = "Резервуар 5",
+                            UnitId = 2,
+                            Volume = 4000.0
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Description = "Подводный",
+                            MaxVolume = 500.0,
+                            Name = "Резервуар 6",
+                            UnitId = 2,
+                            Volume = 500.0
+                        });
                 });
 
             modelBuilder.Entity("Factories.WebApi.DAL.Entities.Unit", b =>
@@ -96,6 +166,29 @@ namespace Factories.WebApi.DAL.Migrations
                     b.HasIndex("FactoryId");
 
                     b.ToTable("Units");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "Газофракционирующая установка",
+                            FactoryId = 1,
+                            Name = "ГФУ-2"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "Атмосферно-вакуумная трубчатка",
+                            FactoryId = 1,
+                            Name = "АВТ-6"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "Атмосферно - вакуумная трубчатка",
+                            FactoryId = 2,
+                            Name = "АВТ-10"
+                        });
                 });
 
             modelBuilder.Entity("Factories.WebApi.DAL.Entities.Tank", b =>
