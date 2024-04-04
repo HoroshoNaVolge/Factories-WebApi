@@ -136,8 +136,6 @@ namespace Factories.WebApi.BLL
                 app.UseSwaggerUI();
             }
 
-            await EnsureDefaultAdminCreated(app);
-
             app.UseHttpsRedirection();
 
             app.UseAuthentication();
@@ -147,48 +145,6 @@ namespace Factories.WebApi.BLL
 
             app.Run();
 
-        }
-        
-        //Потому-что в OnModelCreating не добавить роль и клеймы через UserManager асинхронно
-        private static async Task EnsureDefaultAdminCreated(WebApplication app)
-        {
-            using var scope = app.Services.CreateScope();
-            var services = scope.ServiceProvider;
-            var dbContext = services.GetRequiredService<UsersDbContext>();
-
-            if (!dbContext.Database.CanConnect())
-                throw new DbConnectException("Не удалось подключиться к базе данных, проверьте наличие базы данных и строку подключения");
-
-            var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
-            
-            //Потому что UserName может измениться позже
-            if (await userManager.FindByIdAsync("fe342990-c53a-4bb9-89b6-4b4482e956fb") == null)
-            {
-                var user = new IdentityUser
-                {
-                    Id = "fe342990-c53a-4bb9-89b6-4b4482e956fb",
-                    UserName = "Admin",
-                    Email = "admin@example.com",
-                    EmailConfirmed = true
-                };
-
-                var result = await userManager.CreateAsync(user);
-
-                if (result.Succeeded)
-                {
-                    // Хэш соответствует паролю P@ssw0rd
-                    string passwordHash = "AQAAAAIAAYagAAAAENHAMmgih8HUHvasMFLvvPqwmV/eEMdj8+d8hvvQ79SiWNGomApGcJe65AHTWwUFRQ==";
-
-                    user.PasswordHash = passwordHash;
-
-                    await userManager.UpdateAsync(user);
-
-                    await userManager.AddToRoleAsync(user, "Admin");
-
-                    await userManager.AddClaimAsync(user, new Claim("UnitOperator", "true"));
-                    await userManager.AddClaimAsync(user, new Claim("TankOperator", "true"));
-                }
-            }
         }
     }
 }

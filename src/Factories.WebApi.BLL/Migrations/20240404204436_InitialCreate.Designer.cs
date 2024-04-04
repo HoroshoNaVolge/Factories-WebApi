@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Factories.WebApi.BLL.Migrations
 {
     [DbContext(typeof(UsersDbContext))]
-    [Migration("20240401183220_InitialCreate")]
+    [Migration("20240404204436_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -49,6 +49,20 @@ namespace Factories.WebApi.BLL.Migrations
                         .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "70a2bf46-7e0a-4559-a625-5b3ca954b3cf",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = "66f7058e-10a9-42f7-8bf1-62e5e117e49c",
+                            Name = "User",
+                            NormalizedName = "USER"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -138,6 +152,24 @@ namespace Factories.WebApi.BLL.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "fe342990-c53a-4bb9-89b6-4b4482e956fb",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "0bbf3574-511d-46c5-8aba-5d0d2735b11b",
+                            Email = "admin@mail.ru",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "ADMIN@MAIL.RU",
+                            NormalizedUserName = "ADMIN",
+                            PasswordHash = "AQAAAAIAAYagAAAAENHAMmgih8HUHvasMFLvvPqwmV/eEMdj8+d8hvvQ79SiWNGomApGcJe65AHTWwUFRQ==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "40976921-2918-4629-9054-c572b43c8ebc",
+                            TwoFactorEnabled = false,
+                            UserName = "admin"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -163,6 +195,22 @@ namespace Factories.WebApi.BLL.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("AspNetUserClaims", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ClaimType = "UnitOperator",
+                            ClaimValue = "true",
+                            UserId = "fe342990-c53a-4bb9-89b6-4b4482e956fb"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ClaimType = "TankOperator",
+                            ClaimValue = "true",
+                            UserId = "fe342990-c53a-4bb9-89b6-4b4482e956fb"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
@@ -200,6 +248,13 @@ namespace Factories.WebApi.BLL.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = "fe342990-c53a-4bb9-89b6-4b4482e956fb",
+                            RoleId = "70a2bf46-7e0a-4559-a625-5b3ca954b3cf"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
