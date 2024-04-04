@@ -31,22 +31,21 @@ namespace Factories.WebApi.BLL.Database
                 RoleId = "70a2bf46-7e0a-4559-a625-5b3ca954b3cf"
             });
 
-            modelBuilder.Entity<IdentityUserClaim<string>>().HasData(new IdentityUserClaim<string>
+            modelBuilder.Entity<IdentityUserClaim<string>>().HasData(
+            new IdentityUserClaim<string>
             {
                 Id = 1,
                 UserId = "fe342990-c53a-4bb9-89b6-4b4482e956fb",
                 ClaimType = "UnitOperator",
                 ClaimValue = "true"
-            });
-
-            modelBuilder.Entity<IdentityUserClaim<string>>().HasData(new IdentityUserClaim<string>
+            },
+            new IdentityUserClaim<string>
             {
                 Id = 2,
                 UserId = "fe342990-c53a-4bb9-89b6-4b4482e956fb",
                 ClaimType = "TankOperator",
                 ClaimValue = "true"
             });
-
         }
     }
 }
