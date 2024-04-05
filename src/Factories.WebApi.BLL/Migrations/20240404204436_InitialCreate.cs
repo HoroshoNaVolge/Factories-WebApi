@@ -8,6 +8,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Factories.WebApi.BLL.Migrations
 {
+    // для себя: При разработке можно удалять старую миграцию. В продакшене не следует как правило для отслеживания изменений и сохранения последовательности обновлений (в частности, если миграция уже применена в продакшене)
     /// <inheritdoc />
     public partial class InitialCreate : Migration
     {
