@@ -29,24 +29,26 @@ namespace Factories.WebApi.BLL.Services
         {
             var tanks = await tanksRepository.GetAllAsync(stoppingToken)!;
 
+            double updatedVolume;
+            double randomChange;
+
             foreach (var tank in tanks)
             {
                 // Генерация случайного числа в пределах от -0.1 до 0.1
-                var randomChange = (randomService.NextDouble() - 0.5) * 0.2;
+                randomChange = (randomService.NextDouble() - 0.5) * 0.2;
 
-                var changeValue = tank.Volume * randomChange;
+                updatedVolume = (double)(tank.Volume + tank.Volume * randomChange)!;
 
-                tank.Volume += changeValue;
-
-                if (tank.Volume > tank.MaxVolume)
+                if (updatedVolume > tank.MaxVolume)
                 {
                     Log.Error($"Превышение максимального объёма резервуара: {tank.Name} Volume: {tank.Volume} MaxVolume: {tank.MaxVolume} ");
                     tank.Volume = tank.MaxVolume;
                 }
-                //else
-                //    Log.Information($"Изменен объём резервуара {tank.Name} на {changeValue} до {tank.Volume} MaxVolume: {tank.MaxVolume}");
-            }
 
+                tank.Volume = updatedVolume;
+
+                tanksRepository.Update(tank.Id, tank);
+            }
         }
     }
 }
