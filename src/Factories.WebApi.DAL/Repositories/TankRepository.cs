@@ -2,6 +2,7 @@
 using Factories.WebApi.DAL.Entities;
 using Factories.WebApi.DAL.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Data.Common;
 
 namespace Factories.WebApi.DAL.Repositories
 {
@@ -22,8 +23,6 @@ namespace Factories.WebApi.DAL.Repositories
             if (item != null)
                 db.Tanks.Remove(item);
         }
-
-        public IEnumerable<Tank> Find(Func<Tank, bool> predicate) => db.Tanks.Where(predicate).ToList();
 
         public Tank? Get(int id) => db.Tanks
                                 .Include(t => t.Unit)

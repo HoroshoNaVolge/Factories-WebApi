@@ -19,8 +19,6 @@ namespace Factories.WebApi.DAL.Repositories
                 db.Factories.Remove(item);
         }
 
-        public IEnumerable<Factory> Find(Func<Factory, bool> predicate) => db.Factories.Where(predicate).ToList();
-
         public Factory? Get(int id) => db.Factories.Find(id);
 
         public async Task<IEnumerable<Factory>>? GetAllAsync(CancellationToken token) =>

@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
 using Factories.WebApi.BLL.Database;
 using System.Security.Claims;
+using Factories.WebApi.DAL.Repositories.DapperRepositories;
 
 namespace Factories.WebApi.BLL
 {
@@ -76,9 +77,14 @@ namespace Factories.WebApi.BLL
             builder.Services.AddDbContext<UsersDbContext>(options =>
                                       options.UseNpgsql(builder.Configuration.GetConnectionString("UsersConnection")));
 
-            builder.Services.AddScoped<IRepository<Tank>, TankRepository>()
+            builder.Services//.AddScoped<IRepository<Tank>, TankRepository>()
                              .AddScoped<IRepository<Unit>, UnitRepository>()
                              .AddScoped<IRepository<Factory>, FactoryRepository>();
+
+            builder.Services.AddScoped<IRepository<Tank>>(provider =>
+                  new TankRepositoryDapper(
+                     provider.GetRequiredService<IRepository<Unit>>(),
+                     provider.GetRequiredService<IConfiguration>()));
 
             builder.Services.AddAutoMapper(typeof(MappingProfile));
 

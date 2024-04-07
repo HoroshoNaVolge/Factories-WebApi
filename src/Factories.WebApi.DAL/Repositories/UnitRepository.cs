@@ -22,8 +22,6 @@ namespace Factories.WebApi.DAL.Repositories
                 db.Units.Remove(item);
         }
 
-        public IEnumerable<Unit> Find(Func<Unit, bool> predicate) => db.Units.Where(predicate).ToList();
-
         public Unit? Get(int id) => db.Units.Include(u => u.Factory)
                                 .FirstOrDefault(u => u.Id == id);
 

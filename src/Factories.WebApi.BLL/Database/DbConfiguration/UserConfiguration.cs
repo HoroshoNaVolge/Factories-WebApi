@@ -16,7 +16,9 @@ namespace Factories.WebApi.BLL.Database.DbConfiguration
                 Email = "admin@mail.ru",
                 NormalizedEmail = "ADMIN@MAIL.RU",
                 EmailConfirmed = true,
-                PasswordHash = "AQAAAAIAAYagAAAAENHAMmgih8HUHvasMFLvvPqwmV/eEMdj8+d8hvvQ79SiWNGomApGcJe65AHTWwUFRQ==" //P@ssw0rd
+                PasswordHash = "AQAAAAIAAYagAAAAENHAMmgih8HUHvasMFLvvPqwmV/eEMdj8+d8hvvQ79SiWNGomApGcJe65AHTWwUFRQ==", //P@ssw0rd
+                ConcurrencyStamp = "2b5ddc62-ae7e-4ffb-8d1f-9053ebc7ceea",
+                SecurityStamp = "5a7b4f25-72bf-4559-ac8a-c7501d6ca0a9"
             });
         }
     }

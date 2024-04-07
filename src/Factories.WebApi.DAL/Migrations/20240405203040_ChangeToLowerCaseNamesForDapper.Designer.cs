@@ -3,6 +3,7 @@ using System;
 using Factories.WebApi.DAL.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Factories.WebApi.DAL.Migrations
 {
     [DbContext(typeof(FacilitiesDbContext))]
-    partial class FacilitiesDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240405203040_ChangeToLowerCaseNamesForDapper")]
+    partial class ChangeToLowerCaseNamesForDapper
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -42,7 +45,7 @@ namespace Factories.WebApi.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("factories", (string)null);
+                    b.ToTable("factories");
 
                     b.HasData(
                         new
@@ -93,7 +96,7 @@ namespace Factories.WebApi.DAL.Migrations
 
                     b.HasIndex("UnitId");
 
-                    b.ToTable("tanks", (string)null);
+                    b.ToTable("tanks");
 
                     b.HasData(
                         new
@@ -178,7 +181,7 @@ namespace Factories.WebApi.DAL.Migrations
 
                     b.HasIndex("FactoryId");
 
-                    b.ToTable("units", (string)null);
+                    b.ToTable("units");
 
                     b.HasData(
                         new

@@ -17,6 +17,8 @@ namespace Factories.WebApi.DAL.EF
             modelBuilder.ApplyConfiguration(new FactoryConfiguration());
             modelBuilder.ApplyConfiguration(new UnitConfiguration());
             modelBuilder.ApplyConfiguration(new TankConfiguration());
+
+            modelBuilder.UseLowerCaseTablesAndColumnsNames();
         }
     }
 }
