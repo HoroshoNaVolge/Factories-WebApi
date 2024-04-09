@@ -13,14 +13,13 @@ using Factories.WebApi.BLL.Configuration;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
 using Factories.WebApi.BLL.Database;
-using System.Security.Claims;
 using Factories.WebApi.DAL.Repositories.DapperRepositories;
 
 namespace Factories.WebApi.BLL
 {
     public class Program
     {
-        public static async Task Main(string[] args)
+        public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -77,16 +76,26 @@ namespace Factories.WebApi.BLL
             builder.Services.AddDbContext<UsersDbContext>(options =>
                                       options.UseNpgsql(builder.Configuration.GetConnectionString("UsersConnection")));
 
-            builder.Services//.AddScoped<IRepository<Tank>, TankRepository>()
-                             .AddScoped<IRepository<Unit>, UnitRepository>()
-                             .AddScoped<IRepository<Factory>, FactoryRepository>();
+            // Реализация на EF Core
+            //builder.Services.AddScoped<IRepository<Tank>, TankRepository>()
+            //                .AddScoped<IRepository<Unit>, UnitRepository>()
+            //                .AddScoped<IRepository<Factory>, FactoryRepository>();
 
+
+            // Реализация с Dapper
             builder.Services.AddScoped<IRepository<Tank>>(provider =>
                   new TankRepositoryDapper(
                      provider.GetRequiredService<IRepository<Unit>>(),
-                     provider.GetRequiredService<IConfiguration>()));
+                     provider.GetRequiredService<IConfiguration>()))
+                .AddScoped<IRepository<Unit>>(provider =>
+                new UnitRepositoryDapper(
+                    provider.GetRequiredService<IRepository<Factory>>(),
+                    provider.GetRequiredService<IConfiguration>()))
+                .AddScoped<IRepository<Factory>>(provider =>
+                new FactoryRepositoryDapper(
+                    provider.GetRequiredService<IConfiguration>()));
 
-            builder.Services.AddAutoMapper(typeof(MappingProfile));
+            builder.Services.AddSingleton<MapperlyMapper>();
 
             builder.Services.AddSingleton<IRandomService, RandomService>();
 

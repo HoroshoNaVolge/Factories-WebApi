@@ -1,8 +1,6 @@
-﻿using AutoMapper;
-using Factories.WebApi.BLL.Dto;
+﻿using Factories.WebApi.BLL.Dto;
 using Factories.WebApi.DAL.Entities;
 using Factories.WebApi.DAL.Interfaces;
-using Factories.WebApi.DAL.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,9 +9,9 @@ namespace Factories.WebApi.BLL.Controllers
     [ApiController]
     [Route("api/unit")]
     [Authorize(Policy = "AdminOrUnitOperatorPolicy")]
-    public class UnitController(IRepository<Unit> unitsRepository, IMapper mapper) : ControllerBase
+    public class UnitController(IRepository<Unit> unitsRepository, MapperlyMapper mapper) : ControllerBase
     {
-        private readonly IMapper mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        private readonly MapperlyMapper mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         private readonly IRepository<Unit> unitsRepository = unitsRepository ?? throw new ArgumentNullException(nameof(unitsRepository));
 
         [HttpGet("all")]
@@ -21,7 +19,7 @@ namespace Factories.WebApi.BLL.Controllers
         {
             var units = await (unitsRepository.GetAllAsync(token) ?? throw new NullReferenceException("UoW почему-то ноль или репо ноль"));
 
-            return Ok(mapper.Map<IReadOnlyCollection<UnitDto>>(units));
+            return Ok(units.Select(mapper.UnitToUnitDto).ToList());
         }
 
         [HttpGet("{id}")]
@@ -32,7 +30,7 @@ namespace Factories.WebApi.BLL.Controllers
             if (unit == null)
                 return NotFound();
 
-            return Ok(mapper.Map<UnitDto>(unit));
+            return Ok(mapper.UnitToUnitDto(unit));
         }
 
         [HttpPost]
@@ -41,13 +39,13 @@ namespace Factories.WebApi.BLL.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var unit = mapper.Map<Unit>(unitDto);
+            var unit = mapper.UnitDtoToUnit(unitDto);
 
             unitsRepository.Create(unit);
 
             await unitsRepository.SaveAsync();
 
-            return Ok($"Добавлена установка {unit.Name} в {unit?.Factory?.Name}");
+            return Ok($"Добавлена установка {unit.Name} на завод id: {unit.FactoryId}");
         }
 
         [HttpPut]
@@ -56,7 +54,7 @@ namespace Factories.WebApi.BLL.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var unit = mapper.Map<Unit>(unitDto);
+            var unit = mapper.UnitDtoToUnit(unitDto);
 
             unitsRepository.Update(id, unit);
 

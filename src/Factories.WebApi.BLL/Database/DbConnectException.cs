@@ -1,7 +1,4 @@
-﻿using System.Data.Common;
-using System.Runtime.CompilerServices;
-
-namespace Factories.WebApi.BLL.Database
+﻿namespace Factories.WebApi.BLL.Database
 {
     public class DbConnectException : Exception
     {

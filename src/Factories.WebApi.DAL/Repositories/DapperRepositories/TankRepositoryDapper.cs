@@ -87,20 +87,9 @@ namespace Factories.WebApi.DAL.Repositories.DapperRepositories
                 throw new InvalidOperationException("Tank not found or no changes were made.");
         }
 
-        public void UpdateVolume(int id, double volume)
-        {
-            using var connection = CreateConnection();
-            var sql = "UPDATE Tanks SET Volume = @Volume WHERE Id = @Id";
-            var affectedRows = connection.Execute(sql, new { Volume = volume, Id = id });
-
-            if (affectedRows == 0)
-                throw new InvalidOperationException("Tank not found or no changes were made.");
-        }
-
         public async Task SaveAsync()
         {
-            // Насколько я понял, транзакции не нужны для простых операций СRUD, а Dapper сам сохраняет изменения в БД при запросах.
-            // Так оставлять без реализации допустимо? Для EF сохранение изменений нормально вставлять сразу в сами методы CRUD? Тогда можно удалить SaveAsync из общего интерфейса
+            await Task.Delay(0);
         }
 
         private NpgsqlConnection CreateConnection() => new(connectionString);

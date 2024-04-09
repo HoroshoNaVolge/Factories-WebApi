@@ -29,7 +29,7 @@ namespace Factories.WebApi.BLL.Services
         {
             var tanks = await tanksRepository.GetAllAsync(stoppingToken)!;
 
-            double updatedVolume;
+            int updatedVolume;
             double randomChange;
 
             foreach (var tank in tanks)
@@ -37,12 +37,12 @@ namespace Factories.WebApi.BLL.Services
                 // Генерация случайного числа в пределах от -0.1 до 0.1
                 randomChange = (randomService.NextDouble() - 0.5) * 0.2;
 
-                updatedVolume = (double)(tank.Volume + tank.Volume * randomChange)!;
+                updatedVolume = (int)(tank.Volume + tank.Volume * randomChange)!;
 
                 if (updatedVolume > tank.MaxVolume)
                 {
-                    Log.Error($"Превышение максимального объёма резервуара: {tank.Name} Volume: {tank.Volume} MaxVolume: {tank.MaxVolume} ");
-                    tank.Volume = tank.MaxVolume;
+                    Log.Error($"Превышение максимального объёма резервуара: {tank.Name} Volume: {updatedVolume} MaxVolume: {tank.MaxVolume} ");
+                    updatedVolume = tank.MaxVolume;
                 }
 
                 tank.Volume = updatedVolume;

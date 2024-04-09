@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+﻿using Riok.Mapperly;
 using Factories.WebApi.BLL.Dto;
 using Factories.WebApi.DAL.Entities;
 using Factories.WebApi.DAL.Interfaces;
@@ -11,9 +11,9 @@ namespace Factories.WebApi.BLL.Controllers
     [ApiController]
     [Route("api/tank")]
     [Authorize(Policy = "AdminOrTankOperatorPolicy")]
-    public class TankController(IRepository<Tank> tanksRepository, IMapper mapper) : ControllerBase
+    public class TankController(IRepository<Tank> tanksRepository, MapperlyMapper mapper) : ControllerBase
     {
-        private readonly IMapper mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        private readonly MapperlyMapper mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         private readonly IRepository<Tank> tanksRepository = tanksRepository ?? throw new ArgumentNullException(nameof(tanksRepository));
 
         [HttpGet(template: "all")]
@@ -21,7 +21,7 @@ namespace Factories.WebApi.BLL.Controllers
         {
             var tanks = await (tanksRepository.GetAllAsync(token) ?? throw new NullReferenceException("UoW почему-то ноль или репо ноль"));
 
-            var tankDtos = mapper.Map<IReadOnlyCollection<TankDto>>(tanks);
+            var tankDtos = tanks.Select(mapper.TankToTankDto).ToList();
 
             return Ok(tankDtos);
         }
@@ -33,7 +33,7 @@ namespace Factories.WebApi.BLL.Controllers
 
             if (tank == null) { return NotFound(); }
 
-            var tankDto = mapper.Map<TankDto>(tank);
+            var tankDto = mapper.TankToTankDto(tank);
 
             return Ok(tankDto);
         }
@@ -44,13 +44,13 @@ namespace Factories.WebApi.BLL.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var tank = mapper.Map<Tank>(tankDto);
+            var tank = mapper.TankDtoToTank(tankDto);
 
             tanksRepository.Create(tank);
 
             await tanksRepository.SaveAsync();
 
-            return Ok($"Создан резервуар {tank.Name} на установке {tank.Unit?.Description}");
+            return Ok($"Создан резервуар {tank.Name} на установке id {tank.UnitId}");
         }
 
         [HttpPut]
@@ -59,7 +59,7 @@ namespace Factories.WebApi.BLL.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var tank = mapper.Map<Tank>(tankDto);
+            var tank = mapper.TankDtoToTank(tankDto);
 
             tanksRepository.Update(id, tank);
 
