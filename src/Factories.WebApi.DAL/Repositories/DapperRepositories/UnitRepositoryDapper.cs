@@ -11,19 +11,19 @@ namespace Factories.WebApi.DAL.Repositories.DapperRepositories
     {
         private readonly IRepository<Factory> factoriesRepository = factoriesRepository;
         private readonly string connectionString = configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("DefaultConnection must be set up");
-        public void Create(Unit unit)
+        public async Task CreateAsync(Unit unit)
         {
             _ = factoriesRepository.Get(unit.FactoryId) ?? throw new ArgumentException($"Invalid factory id {unit.FactoryId}");
 
             using var connection = CreateConnection();
             var sql = "INSERT INTO Units (Name, Description, FactoryId) VALUES (@Name, @Description, @FactoryId)";
-            connection.Execute(sql, unit);
+            await connection.ExecuteAsync(sql, unit);
         }
-        public void Delete(int id)
+        public async Task DeleteAsync(int id)
         {
             using var connection = CreateConnection();
             var sql = "DELETE FROM Units WHERE Id = @Id";
-            connection.Execute(sql, new { Id = id });
+            await connection.ExecuteAsync(sql, new { Id = id });
         }
 
         public Unit? Get(int id)
@@ -77,19 +77,14 @@ namespace Factories.WebApi.DAL.Repositories.DapperRepositories
             return unitsDict.Values;
         }
 
-        public void Update(int id, Unit unit)
+        public async Task UpdateAsync(int id, Unit unit)
         {
             using var connection = CreateConnection();
             var sql = "UPDATE Units SET Name = @Name, Description = @Description, FactoryId = @FactoryId WHERE Id = @Id";
-            var affectedRows = connection.Execute(sql, new { unit.Name, unit.Description, unit.FactoryId, Id = id });
+            var affectedRows = await connection.ExecuteAsync(sql, new { unit.Name, unit.Description, unit.FactoryId, Id = id });
 
             if (affectedRows == 0)
                 throw new InvalidOperationException("Unit not found or no changes were made.");
-        }
-
-        public async Task SaveAsync()
-        {
-            await Task.Delay(0);
         }
 
         private NpgsqlConnection CreateConnection() => new(connectionString);

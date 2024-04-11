@@ -41,9 +41,7 @@ namespace Factories.WebApi.BLL.Controllers
 
             var unit = mapper.UnitDtoToUnit(unitDto);
 
-            unitsRepository.Create(unit);
-
-            await unitsRepository.SaveAsync();
+            await unitsRepository.CreateAsync(unit);
 
             return Ok($"Добавлена установка {unit.Name} на завод id: {unit.FactoryId}");
         }
@@ -56,9 +54,7 @@ namespace Factories.WebApi.BLL.Controllers
 
             var unit = mapper.UnitDtoToUnit(unitDto);
 
-            unitsRepository.Update(id, unit);
-
-            await unitsRepository.SaveAsync();
+            await unitsRepository.UpdateAsync(id, unit);
 
             return Ok($"Установка {unit.Name} обновлена");
         }
@@ -66,9 +62,7 @@ namespace Factories.WebApi.BLL.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUnitAsync(int id)
         {
-            unitsRepository.Delete(id);
-
-            await unitsRepository.SaveAsync();
+            await unitsRepository.DeleteAsync(id);
 
             return Ok($"Установка по номеру {id} удалена");
         }

@@ -9,26 +9,31 @@ namespace Factories.WebApi.DAL.Repositories
     {
         private readonly IRepository<Factory> factoriesRepository = factoriesRepository;
         private readonly FacilitiesDbContext db = db;
-        public void Create(Unit unit)
+
+        public async Task CreateAsync(Unit unit)
         {
             unit.Factory = factoriesRepository.Get(unit.FactoryId) ?? throw new ArgumentException($"Invalid factory id {unit.FactoryId}");
 
             db.Units.Add(unit);
+
+            await db.SaveChangesAsync();
         }
-        public void Delete(int id)
+
+        public async Task DeleteAsync(int id)
         {
             Unit? item = db.Units.Find(id);
             if (item != null)
                 db.Units.Remove(item);
-        }
 
+            await db.SaveChangesAsync();
+        }
         public Unit? Get(int id) => db.Units.Include(u => u.Factory)
                                 .FirstOrDefault(u => u.Id == id);
 
         public async Task<IEnumerable<Unit>> GetAllAsync(CancellationToken token) =>
             await db.Units.Include(u => u.Factory).ToListAsync(token);
 
-        public void Update(int id, Unit unit)
+        public async Task UpdateAsync(int id, Unit unit)
         {
             Unit? existingUnit = db.Units.Find(id) ?? throw new InvalidOperationException("Unit not found");
 
@@ -39,8 +44,8 @@ namespace Factories.WebApi.DAL.Repositories
             existingUnit.Name = unit.Name;
             existingUnit.Description = unit.Description;
             existingUnit.FactoryId = unit.FactoryId;
-        }
 
-        public async Task SaveAsync() => await db.SaveChangesAsync();
+            await db.SaveChangesAsync();
+        }
     }
 }

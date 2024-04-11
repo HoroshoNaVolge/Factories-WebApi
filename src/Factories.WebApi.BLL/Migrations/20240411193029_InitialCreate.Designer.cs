@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Factories.WebApi.BLL.Migrations
 {
     [DbContext(typeof(UsersDbContext))]
-    [Migration("20240404204436_InitialCreate")]
+    [Migration("20240411193029_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -158,7 +158,7 @@ namespace Factories.WebApi.BLL.Migrations
                         {
                             Id = "fe342990-c53a-4bb9-89b6-4b4482e956fb",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "0bbf3574-511d-46c5-8aba-5d0d2735b11b",
+                            ConcurrencyStamp = "2b5ddc62-ae7e-4ffb-8d1f-9053ebc7ceea",
                             Email = "admin@mail.ru",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
@@ -166,7 +166,7 @@ namespace Factories.WebApi.BLL.Migrations
                             NormalizedUserName = "ADMIN",
                             PasswordHash = "AQAAAAIAAYagAAAAENHAMmgih8HUHvasMFLvvPqwmV/eEMdj8+d8hvvQ79SiWNGomApGcJe65AHTWwUFRQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "40976921-2918-4629-9054-c572b43c8ebc",
+                            SecurityStamp = "5a7b4f25-72bf-4559-ac8a-c7501d6ca0a9",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });

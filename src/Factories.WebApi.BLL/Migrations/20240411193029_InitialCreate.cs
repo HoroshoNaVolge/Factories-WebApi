@@ -8,7 +8,6 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Factories.WebApi.BLL.Migrations
 {
-    // для себя: При разработке можно удалять старую миграцию. В продакшене не следует как правило для отслеживания изменений и сохранения последовательности обновлений (в частности, если миграция уже применена в продакшене)
     /// <inheritdoc />
     public partial class InitialCreate : Migration
     {
@@ -172,7 +171,7 @@ namespace Factories.WebApi.BLL.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "fe342990-c53a-4bb9-89b6-4b4482e956fb", 0, "0bbf3574-511d-46c5-8aba-5d0d2735b11b", "admin@mail.ru", true, false, null, "ADMIN@MAIL.RU", "ADMIN", "AQAAAAIAAYagAAAAENHAMmgih8HUHvasMFLvvPqwmV/eEMdj8+d8hvvQ79SiWNGomApGcJe65AHTWwUFRQ==", null, false, "40976921-2918-4629-9054-c572b43c8ebc", false, "admin" });
+                values: new object[] { "fe342990-c53a-4bb9-89b6-4b4482e956fb", 0, "2b5ddc62-ae7e-4ffb-8d1f-9053ebc7ceea", "admin@mail.ru", true, false, null, "ADMIN@MAIL.RU", "ADMIN", "AQAAAAIAAYagAAAAENHAMmgih8HUHvasMFLvvPqwmV/eEMdj8+d8hvvQ79SiWNGomApGcJe65AHTWwUFRQ==", null, false, "5a7b4f25-72bf-4559-ac8a-c7501d6ca0a9", false, "admin" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserClaims",

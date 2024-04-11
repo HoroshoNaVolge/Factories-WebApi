@@ -6,10 +6,8 @@ namespace Factories.WebApi.DAL.Interfaces
     {
         Task<IEnumerable<T>>? GetAllAsync(CancellationToken token);
         T? Get(int id);
-        void Create(T item);
-        void Update(int id, T facility);
-        void Delete(int id);
-
-        Task SaveAsync();
+        Task CreateAsync(T item);
+        Task UpdateAsync(int id, T facility);
+        Task DeleteAsync(int id);
     }
 }

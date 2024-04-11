@@ -2,7 +2,6 @@
 using Factories.WebApi.DAL.Entities;
 using Factories.WebApi.DAL.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System.Data.Common;
 
 namespace Factories.WebApi.DAL.Repositories
 {
@@ -11,17 +10,22 @@ namespace Factories.WebApi.DAL.Repositories
         private readonly IRepository<Unit> unitsRepository = unitsRepository;
         private readonly FacilitiesDbContext db = db;
 
-        public void Create(Tank tank)
+        public async Task CreateAsync(Tank tank)
         {
             tank.Unit = unitsRepository.Get(tank.UnitId) ?? throw new ArgumentException($"Invalid unit id {tank.UnitId}");
 
             db.Tanks.Add(tank);
+
+            await db.SaveChangesAsync();
         }
-        public void Delete(int id)
+
+        public async Task DeleteAsync(int id)
         {
             Tank? item = db.Tanks.Find(id);
             if (item != null)
                 db.Tanks.Remove(item);
+
+            await db.SaveChangesAsync();
         }
 
         public Tank? Get(int id) => db.Tanks
@@ -32,7 +36,7 @@ namespace Factories.WebApi.DAL.Repositories
             await db.Tanks.Include(t => t.Unit)
             .ToListAsync(token);
 
-        public void Update(int id, Tank tank)
+        public async Task UpdateAsync(int id, Tank tank)
         {
             var existingTank = db.Tanks.Find(id) ?? throw new InvalidOperationException("Tank not found");
             tank.Unit = unitsRepository.Get(tank.UnitId) ?? throw new ArgumentException($"Invalid unit id {tank.UnitId}");
@@ -44,8 +48,8 @@ namespace Factories.WebApi.DAL.Repositories
             existingTank.MaxVolume = tank.MaxVolume;
             existingTank.Description = tank.Description;
             existingTank.Name = tank.Name;
-        }
 
-        public async Task SaveAsync() => await db.SaveChangesAsync();
+            await db.SaveChangesAsync();
+        }
     }
 }

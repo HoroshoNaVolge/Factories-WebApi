@@ -76,24 +76,7 @@ namespace Factories.WebApi.BLL
             builder.Services.AddDbContext<UsersDbContext>(options =>
                                       options.UseNpgsql(builder.Configuration.GetConnectionString("UsersConnection")));
 
-            // Реализация на EF Core
-            //builder.Services.AddScoped<IRepository<Tank>, TankRepository>()
-            //                .AddScoped<IRepository<Unit>, UnitRepository>()
-            //                .AddScoped<IRepository<Factory>, FactoryRepository>();
-
-
-            // Реализация с Dapper
-            builder.Services.AddScoped<IRepository<Tank>>(provider =>
-                  new TankRepositoryDapper(
-                     provider.GetRequiredService<IRepository<Unit>>(),
-                     provider.GetRequiredService<IConfiguration>()))
-                .AddScoped<IRepository<Unit>>(provider =>
-                new UnitRepositoryDapper(
-                    provider.GetRequiredService<IRepository<Factory>>(),
-                    provider.GetRequiredService<IConfiguration>()))
-                .AddScoped<IRepository<Factory>>(provider =>
-                new FactoryRepositoryDapper(
-                    provider.GetRequiredService<IConfiguration>()));
+            ConfigureRepositories(builder);
 
             builder.Services.AddSingleton<MapperlyMapper>();
 
@@ -160,6 +143,33 @@ namespace Factories.WebApi.BLL
 
             app.Run();
 
+        }
+
+        private static void ConfigureRepositories(WebApplicationBuilder builder)
+        {
+            if (builder.Configuration.GetValue<bool>("UseDapper"))
+                RegisterDapperRepositories(builder.Services);
+            else
+                RegisterEFRepositories(builder.Services);
+        }
+
+        private static void RegisterDapperRepositories(IServiceCollection services)
+        {
+            services.AddScoped<IRepository<Factory>>(provider =>
+                new FactoryRepositoryDapper(provider.GetRequiredService<IConfiguration>()));
+
+            services.AddScoped<IRepository<Unit>>(provider =>
+                new UnitRepositoryDapper(provider.GetRequiredService<IRepository<Factory>>(), provider.GetRequiredService<IConfiguration>()));
+
+            services.AddScoped<IRepository<Tank>>(provider =>
+                new TankRepositoryDapper(provider.GetRequiredService<IRepository<Unit>>(), provider.GetRequiredService<IConfiguration>()));
+        }
+
+        private static void RegisterEFRepositories(IServiceCollection services)
+        {
+            services.AddScoped<IRepository<Tank>, TankRepository>();
+            services.AddScoped<IRepository<Unit>, UnitRepository>();
+            services.AddScoped<IRepository<Factory>, FactoryRepository>();
         }
     }
 }
