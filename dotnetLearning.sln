@@ -14,9 +14,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Factories.WebApi.BLL", "src
 		{0F3392F9-90E8-4ECD-B479-35F0CD399369} = {0F3392F9-90E8-4ECD-B479-35F0CD399369}
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Factories.WebApi.NUnitTests", "src\Factories.WebApi.Tests\Factories.WebApi.NUnitTests.csproj", "{8B9336A9-9ADD-42EA-B730-2DCAFA363070}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Factories.WebApi.NUnitTests", "src\Factories.WebApi.NUnitTests\Factories.WebApi.NUnitTests.csproj", "{8B9336A9-9ADD-42EA-B730-2DCAFA363070}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Factories.WebApi.XUnitTests", "Factories.WebApi.XUnitTests\Factories.WebApi.XUnitTests.csproj", "{864CD5DC-A198-4D2B-89D7-D22122C22D9B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Factories.WebApi.XUnitTests", "src\Factories.WebApi.XUnitTests\Factories.WebApi.XUnitTests.csproj", "{864CD5DC-A198-4D2B-89D7-D22122C22D9B}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{35E96F64-329A-4E48-942D-FEEE392D940B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -48,6 +50,10 @@ Global
 		{864CD5DC-A198-4D2B-89D7-D22122C22D9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{864CD5DC-A198-4D2B-89D7-D22122C22D9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{864CD5DC-A198-4D2B-89D7-D22122C22D9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35E96F64-329A-4E48-942D-FEEE392D940B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35E96F64-329A-4E48-942D-FEEE392D940B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35E96F64-329A-4E48-942D-FEEE392D940B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35E96F64-329A-4E48-942D-FEEE392D940B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

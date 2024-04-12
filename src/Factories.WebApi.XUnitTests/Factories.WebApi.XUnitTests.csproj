@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\Factories.WebApi.BLL\Factories.WebApi.BLL.csproj" />
+    <ProjectReference Include="..\Factories.WebApi.BLL\Factories.WebApi.BLL.csproj" />
   </ItemGroup>
 
   <ItemGroup>

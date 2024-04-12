@@ -34,7 +34,7 @@ namespace Factories.WebApi.XUnitTests
 
             Assert.All(tanks, tank =>
             {
-                var volume = tank.Volume ?? 0;
+                var volume = tank.Volume;
                 Assert.True(volume >= 0 && volume <= 99, $"Tank {tank.Name} volume {volume} is out of range.");
             });
         }
