@@ -6,11 +6,13 @@ services:
     build:
       context: .
       dockerfile: src/Factories.WebApi.BLL/Dockerfile
+    depends_on:
+      - postgres-container
   postgres-container:
     image: postgres:13
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: corsar
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
