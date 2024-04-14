@@ -8,6 +8,9 @@ services:
       dockerfile: src/Factories.WebApi.BLL/Dockerfile
     depends_on:
       - postgres-container
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=postgres-container;Port=5432;Database=postgres;Username=postgres;Password=${POSTGRES_PASSWORD}
+      - ConnectionStrings__UsersConnection=Host=postgres-container;Port=5432;Database=postgres;Username=postgres;Password=${POSTGRES_PASSWORD}
   postgres-container:
     image: postgres:13
     environment:
