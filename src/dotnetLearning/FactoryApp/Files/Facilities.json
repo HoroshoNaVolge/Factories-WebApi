@@ -1,0 +1,100 @@
+{
+  "Factory": [
+    {
+      "Id": 1,
+      "Name": "НПЗ\u21161",
+      "Description": "Первый нефтеперерабатывающий завод"
+    },
+    {
+      "Id": 2,
+      "Name": "НПЗ\u21162",
+      "Description": "Второй нефтеперерабатывающий завод"
+    }
+  ],
+  "Unit": [
+    {
+      "Id": 1,
+      "Name": "ГФУ-2",
+      "Description": "Газофракционирующая установка",
+      "FactoryId": 1
+    },
+    {
+      "Id": 2,
+      "Name": "АВТ-6",
+      "Description": "Атмосферно-вакуумная трубчатка",
+      "FactoryId": 1
+    },
+    {
+      "Id": 3,
+      "Name": "АВТ-10",
+      "Description": "Атмосферно - вакуумная трубчатка",
+      "FactoryId": 2
+    }
+  ],
+  "Tank": [
+    {
+      "Id": 1,
+      "Name": "Резервуар 1",
+      "Description": "Надземный-вертикальный",
+      "UnitId": 1,
+      "Volume": 1500,
+      "MaxVolume": 2000
+    },
+    {
+      "Id": 2,
+      "Name": "Резервуар 2",
+      "Description": "Надземный-горизонтальный",
+      "UnitId": 1,
+      "Volume": 2500,
+      "MaxVolume": 3000
+    },
+    {
+      "Id": 3,
+      "Name": "Резервуар 3",
+      "Description": "Надземный-горизонтальный",
+      "UnitId": 2,
+      "Volume": 3000,
+      "MaxVolume": 3000
+    },
+    {
+      "Id": 4,
+      "Name": "Резервуар 4",
+      "Description": "Надземный-вертикальный",
+      "UnitId": 2,
+      "Volume": 3000,
+      "MaxVolume": 3000
+    },
+    {
+      "Id": 5,
+      "Name": "Резервуар 5",
+      "Description": "Подземный-двустенный",
+      "UnitId": 2,
+      "Volume": 4000,
+      "MaxVolume": 5000
+    },
+    {
+      "Id": 6,
+      "Name": "Резервуар 6",
+      "Description": "Подводный",
+      "UnitId": 3,
+      "Volume": 500,
+      "MaxVolume": 500
+    },
+    {
+      "Id": 1,
+      "Name": "11",
+      "Description": "11",
+      "UnitId": 11,
+      "Volume": 11,
+      "MaxVolume": 11
+    },
+    {
+      "Id": 123,
+      "Name": "asd",
+      "Description": "asd",
+      "UnitId": 123,
+      "Volume": 123,
+      "MaxVolume": 123
+    }
+  ]
+}

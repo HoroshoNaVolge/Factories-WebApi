@@ -1,17 +1,17 @@
-﻿using System.Text.Json;
+﻿using System.Reflection;
 
-namespace dotnetLearning.Lesson2
+namespace dotnetLearning.JsonParserApp
 {
-    internal class Lesson2
+    internal class StartJsonParserApp
     {
         internal static void Run()
         {
-            IEnumerable<Deal> objectsFromJson = JsonParser.GetJsonFromFile(@"C:\\Users\\user\\source\\repos\\dotnetLearning\\Lesson2\\JSON_sample_1.json");
+            IEnumerable<Deal> objectsFromJson = JsonParser.GetJsonFromFile(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\JSON_sample_1.json");
 
             var result = GetNumbersOfDeals(objectsFromJson);
             Console.WriteLine("Номера 5 самых ранних сделок с суммой >100 руб по убыванию суммы: " + string.Join(", ", result));
 
-            IList<SumByMonth> periods = GetSumsByMonth(objectsFromJson);
+            IEnumerable<SumByMonth> periods = GetSumsByMonth(objectsFromJson);
 
             foreach (var period in periods)
             {
@@ -21,7 +21,7 @@ namespace dotnetLearning.Lesson2
             }
         }
 
-        static IList<string> GetNumbersOfDeals(IEnumerable<Deal> deals)
+        static List<string> GetNumbersOfDeals(IEnumerable<Deal> deals)
         {
             // Фильтрация сделок по сумме не меньше 100 рублей
             var filteredDeals = deals.Where(deal => deal.Sum >= 100);
@@ -38,7 +38,7 @@ namespace dotnetLearning.Lesson2
         record SumByMonth(DateTime Period, int Sum);
 
         // Реализовать метод GetSumsByMonth, который принимает коллекцию объектов класса Deal, группирует по месяцу сделки и возвращает сумму сделок за каждый месяц
-        static IList<SumByMonth> GetSumsByMonth(IEnumerable<Deal> deals)
+        static List<SumByMonth> GetSumsByMonth(IEnumerable<Deal> deals)
         {
             var sumByMonth = deals
                             .GroupBy(deal => new { deal.Date.Year, deal.Date.Month })

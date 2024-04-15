@@ -397,3 +397,6 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 /src/AspNetCore.WebApi/appsettings.Development.json
+src/.DS_Store
+.DS_Store
+/src/dotnetLearning/FactoryApp/Files/Facilities.xlsx
