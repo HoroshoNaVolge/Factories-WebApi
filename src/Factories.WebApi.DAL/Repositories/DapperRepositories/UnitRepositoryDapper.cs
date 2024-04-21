@@ -3,16 +3,21 @@ using Factories.WebApi.DAL.Interfaces;
 using Dapper;
 using Npgsql;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Caching.Distributed;
+using System.Text.Json;
 
 
 namespace Factories.WebApi.DAL.Repositories.DapperRepositories
 {
-    public class UnitRepositoryDapper(IRepository<Factory> factoriesRepository, IConfiguration configuration) : IRepository<Unit>
+    public class UnitRepositoryDapper(IRepository<Factory> factoriesRepository, IConfiguration configuration, IDistributedCache cache) : IRepository<Unit>
     {
         private readonly IRepository<Factory> factoriesRepository = factoriesRepository;
         private readonly string connectionString = configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("DefaultConnection must be set up");
+        private readonly IDistributedCache cache = cache;
+
         public async Task CreateAsync(Unit unit)
         {
+            await cache.RemoveAsync("units_all");
             _ = factoriesRepository.Get(unit.FactoryId) ?? throw new ArgumentException($"Invalid factory id {unit.FactoryId}");
 
             using var connection = CreateConnection();
@@ -21,6 +26,8 @@ namespace Factories.WebApi.DAL.Repositories.DapperRepositories
         }
         public async Task DeleteAsync(int id)
         {
+            await cache.RemoveAsync("units_all");
+
             using var connection = CreateConnection();
             var sql = "DELETE FROM Units WHERE Id = @Id";
             await connection.ExecuteAsync(sql, new { Id = id });
@@ -50,6 +57,15 @@ namespace Factories.WebApi.DAL.Repositories.DapperRepositories
 
         public async Task<IEnumerable<Unit>> GetAllAsync(CancellationToken token)
         {
+            var cacheKey = "units_all";
+            var cachedData = await cache.GetStringAsync(cacheKey, token);
+
+            if (!string.IsNullOrEmpty(cachedData))
+            {
+                return JsonSerializer.Deserialize<List<Unit>>(cachedData) ?? throw new InvalidOperationException("JSON deserialization error"); ;
+            }
+
+
             using var connection = CreateConnection();
             var sql = @"
                       SELECT u.*, f.* FROM Units u
@@ -74,6 +90,13 @@ namespace Factories.WebApi.DAL.Repositories.DapperRepositories
                 splitOn: "Id"
             );
 
+            var serializedData = JsonSerializer.Serialize(unitsDict.Values);
+
+            await cache.SetStringAsync(cacheKey, serializedData, new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(60)
+            }, token);
+
             return unitsDict.Values;
         }
 
@@ -85,6 +108,8 @@ namespace Factories.WebApi.DAL.Repositories.DapperRepositories
 
             if (affectedRows == 0)
                 throw new InvalidOperationException("Unit not found or no changes were made.");
+
+            await cache.RemoveAsync("units_all");
         }
 
         private NpgsqlConnection CreateConnection() => new(connectionString);

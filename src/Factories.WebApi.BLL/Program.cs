@@ -14,6 +14,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
 using Factories.WebApi.BLL.Database;
 using Factories.WebApi.DAL.Repositories.DapperRepositories;
+using System.Threading.RateLimiting;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace Factories.WebApi.BLL
 {
@@ -22,6 +24,8 @@ namespace Factories.WebApi.BLL
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Configuration.AddEnvironmentVariables(prefix: "DOTNETLEARNING_"); // для исключения коллизий
 
             builder.Services.AddIdentity<IdentityUser, IdentityRole>()
                              .AddEntityFrameworkStores<UsersDbContext>()
@@ -70,6 +74,12 @@ namespace Factories.WebApi.BLL
                         return context.User.IsInRole("Admin") || context.User.HasClaim(c => c.Type == "TankOperator");
                     });
                 });
+
+            builder.Services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = builder.Configuration.GetConnectionString("RedisConnection");
+                options.InstanceName = "SampleInstance";
+            });
 
             builder.Services.AddDbContext<FacilitiesDbContext>(options =>
                           options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -156,13 +166,13 @@ namespace Factories.WebApi.BLL
         private static void RegisterDapperRepositories(IServiceCollection services)
         {
             services.AddScoped<IRepository<Factory>>(provider =>
-                new FactoryRepositoryDapper(provider.GetRequiredService<IConfiguration>()));
+                new FactoryRepositoryDapper(provider.GetRequiredService<IConfiguration>(), provider.GetRequiredService<IDistributedCache>()));
 
             services.AddScoped<IRepository<Unit>>(provider =>
-                new UnitRepositoryDapper(provider.GetRequiredService<IRepository<Factory>>(), provider.GetRequiredService<IConfiguration>()));
+                new UnitRepositoryDapper(provider.GetRequiredService<IRepository<Factory>>(), provider.GetRequiredService<IConfiguration>(), provider.GetRequiredService<IDistributedCache>()));
 
             services.AddScoped<IRepository<Tank>>(provider =>
-                new TankRepositoryDapper(provider.GetRequiredService<IRepository<Unit>>(), provider.GetRequiredService<IConfiguration>()));
+                new TankRepositoryDapper(provider.GetRequiredService<IRepository<Unit>>(), provider.GetRequiredService<IConfiguration>(), provider.GetRequiredService<IDistributedCache>()));
         }
 
         private static void RegisterEFRepositories(IServiceCollection services)
