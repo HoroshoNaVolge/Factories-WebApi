@@ -92,7 +92,16 @@ namespace Factories.WebApi.BLL
 
             builder.Services.AddSingleton<IRandomService, RandomService>();
 
-            builder.Services.AddHostedService<WorkerService>();
+            builder.Services.AddSingleton(provider =>
+            {
+                var configuration = provider.GetRequiredService<IConfiguration>();
+                var connectionString = configuration.GetConnectionString("RabbitMQConnection") ?? throw new InvalidOperationException("RabbitMQ connection string must be set up");
+                return new RabbitMQClient(connectionString);
+            });
+
+
+            builder.Services.AddHostedService<WorkerService>()
+                            .AddHostedService<TankUpdateService>();
 
             Log.Logger = new LoggerConfiguration()
              .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Error)

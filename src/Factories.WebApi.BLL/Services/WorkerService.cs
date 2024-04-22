@@ -1,10 +1,11 @@
 ﻿using Factories.WebApi.DAL.Entities;
 using Factories.WebApi.DAL.Interfaces;
 using Serilog;
+using System.Text.Json;
 
 namespace Factories.WebApi.BLL.Services
 {
-    public class WorkerService(IServiceScopeFactory serviceScopeFactory, IRandomService randomService) : BackgroundService
+    public class WorkerService(IServiceScopeFactory serviceScopeFactory, IRandomService randomService, RabbitMQClient rabbitMQClient) : BackgroundService
     {
         private readonly IServiceScopeFactory serviceScopeFactory = serviceScopeFactory;
         private readonly IRandomService randomService = randomService;
@@ -46,8 +47,9 @@ namespace Factories.WebApi.BLL.Services
 
                 tank.Volume = updatedVolume;
 
-                await tanksRepository.UpdateAsync(tank.Id, tank);
+                rabbitMQClient.SendMessage(JsonSerializer.Serialize(new { TankId = tank.Id, UpdatedVolume = tank.Volume }));
             }
+             //await tanksRepository.UpdateAsync(tank.Id, tank);
         }
     }
 }
