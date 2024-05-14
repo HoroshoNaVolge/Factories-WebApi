@@ -9,14 +9,10 @@ namespace RunInParallelJsonPlaceholder
         {
             try
             {
-                var postIds = GeneratePostIds(105);
+                var postIds = GeneratePostIds(103);
                 var posts = await LoadPostsInParallel(postIds);
 
-                Console.WriteLine($"Total posts loaded: " +
-                    $"{posts.Where(p => p.Title != "Error loading post")
-                    .OrderBy(p => p.Id)
-                    .ToList()
-                    .Count}");
+                Console.WriteLine($"Total posts loaded: {posts.Count(p => p.Title != "Error loading post")}");
 
                 foreach (var post in posts)
                     Console.WriteLine(post.ToString());
@@ -52,9 +48,8 @@ namespace RunInParallelJsonPlaceholder
                     return await response.Content.ReadFromJsonAsync<Post>().ConfigureAwait(false) ?? new Post() { Id = postId, Title = "Error loading post" };
                 }
 
-                catch (HttpRequestException ex)
+                catch (HttpRequestException)
                 {
-                    Console.WriteLine($"Error loading post {postId}: {ex.Message}");
                     return new Post { Id = postId, Title = "Error loading post" };
                 }
 
