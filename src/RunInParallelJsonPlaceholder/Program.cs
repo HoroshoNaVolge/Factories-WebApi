@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using System.Text.Json;
+using ParallelExtensions;
 
 namespace RunInParallelJsonPlaceholder
 {
@@ -69,42 +70,5 @@ namespace RunInParallelJsonPlaceholder
         }
     }
 
-    public static class ParallelExtensions
-    {
-        public static async Task<IReadOnlyCollection<T>> RunInParallel<T>(
-            this IEnumerable<Func<Task<T>>> tasks, int maxParallelTasks = 4)
-        {
-            var taskLists = tasks.ToList();
-            var results = new List<T?>();
-
-            var semaphore = new SemaphoreSlim(maxParallelTasks, maxParallelTasks);
-
-            var tasksToRun = taskLists.Select(async taskFunc =>
-            {
-                await semaphore.WaitAsync();
-                try
-                {
-                    return await taskFunc();
-                }
-
-                catch (HttpRequestException ex)
-                {
-                    await Console.Out.WriteLineAsync($"Network error: {ex.Message}");
-                    return default;
-                }
-
-                finally
-                {
-                    semaphore.Release();
-                }
-            }).ToList();
-
-            foreach (var task in tasksToRun)
-            {
-                if (task is not null)
-                    results.Add(await task);
-            }
-            return results.AsReadOnly()!;
-        }
-    }
+    
 }
