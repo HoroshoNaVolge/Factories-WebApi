@@ -1,74 +1,81 @@
-﻿using System.Collections.Immutable;
-using System.Text.Json;
-using ParallelExtensions;
+﻿using ParallelExtensions;
+using System.Net.Http.Json;
 
 namespace RunInParallelJsonPlaceholder
 {
     internal class Program
     {
-        static volatile int postId = 1;
-
         static async Task Main()
         {
-            var posts = await LoadPostsInParallel(5);
-            Console.WriteLine($"Total posts loaded: {posts.Count}");
-
-            foreach (var post in posts)
-                Console.WriteLine(post.ToString());
-        }
-
-        public static async Task<IReadOnlyCollection<Post>> LoadPostsInParallel(int numThreads)
-        {
-            var tasks = new List<Func<Task<Post>>>();
-
-            while (true)
-            {
-                var task = FetchPostAsync(postId++);
-                tasks.Add(() => task);
-                var result = await task;
-
-                if (result == null)
-                {
-                    Console.WriteLine("No more posts to load.");
-                    break;
-                }
-            }
-
-            var results = await tasks.RunInParallel(numThreads);
-
-            return results.Where(post => post != null).ToImmutableList();
-        }
-
-
-        public static async Task<Post> FetchPostAsync(int postId)
-        {
-            using var httpClient = new HttpClient();
             try
             {
-                var response = await httpClient.GetAsync($"https://jsonplaceholder.typicode.com/posts/{postId}");
+                var postIds = GeneratePostIds(105);
+                var posts = await LoadPostsInParallel(postIds);
 
-                if (response.IsSuccessStatusCode)
-                {
-                    var postJson = await response.Content.ReadAsStringAsync();
-                    var post = JsonSerializer.Deserialize<Post>(postJson);
-                    return post!;
-                }
-                else
-                    return null!;
+                Console.WriteLine($"Total posts loaded: " +
+                    $"{posts.Where(p => p.Title != "Error loading post")
+                    .OrderBy(p => p.Id)
+                    .ToList()
+                    .Count}");
 
+                foreach (var post in posts)
+                    Console.WriteLine(post.ToString());
             }
             catch (HttpRequestException ex)
             {
-                Console.WriteLine($"Network error occurred while loading post {postId}: {ex.Message}");
-                return null!;
+                Console.WriteLine($"An http request error occurred: {ex.Message}");
             }
+
             catch (Exception ex)
             {
-                Console.WriteLine($"An error occurred while loading post {postId}: {ex.Message}");
-                return null!;
+                Console.WriteLine($"An error occurred: {ex.Message}");
             }
         }
-    }
 
-    
+        static IEnumerable<int> GeneratePostIds(int count)
+        {
+            for (int i = 1; i <= count; i++)
+                yield return i;
+        }
+
+        public static async Task<IReadOnlyCollection<Post>> LoadPostsInParallel(IEnumerable<int> postIds)
+        {
+            using var httpClient = new HttpClient();
+
+            async Task<Post> LoadPost(int postId)
+            {
+                try
+                {
+                    var response = await httpClient.GetAsync($"https://jsonplaceholder.typicode.com/posts/{postId}")
+                        .ConfigureAwait(false);
+                    response.EnsureSuccessStatusCode();
+                    return await response.Content.ReadFromJsonAsync<Post>().ConfigureAwait(false) ?? new Post() { Id = postId, Title = "Error loading post" };
+                }
+
+                catch (HttpRequestException ex)
+                {
+                    Console.WriteLine($"Error loading post {postId}: {ex.Message}");
+                    return new Post { Id = postId, Title = "Error loading post" };
+                }
+
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Unexpected error happened with postId={postId}: {ex.Message}");
+                    return new Post { Id = postId, Title = "Error loading post" };
+                }
+            }
+
+            var tasks = new List<Func<Task<Post>>>();
+
+            foreach (var postId in postIds)
+            {
+                int capturedPostId = postId;
+                tasks.Add(() => LoadPost(capturedPostId));
+            }
+
+            var results = await tasks.RunInParallel(maxParallelTasks: 5).ConfigureAwait(false);
+
+            return [.. results.OrderBy(post => post.Id)];
+        }
+    }
 }

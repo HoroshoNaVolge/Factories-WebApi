@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore.WebApi", "src\As
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RunInParallelJsonPlaceholder", "src\RunInParallelJsonPlaceholder\RunInParallelJsonPlaceholder.csproj", "{DFC2D1DE-31F2-452B-92DB-0F3B446D55E1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParallelExtensions", "ParallelExtensions\ParallelExtensions.csproj", "{280E3000-F83E-4D39-9AC6-37EF8CCF9CE1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParallelExtensions", "src\ParallelExtensions\ParallelExtensions.csproj", "{280E3000-F83E-4D39-9AC6-37EF8CCF9CE1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
