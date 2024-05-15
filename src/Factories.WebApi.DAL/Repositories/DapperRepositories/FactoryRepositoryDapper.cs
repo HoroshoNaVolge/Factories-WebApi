@@ -53,9 +53,38 @@ namespace Factories.WebApi.DAL.Repositories.DapperRepositories
 
             var serializedData = JsonSerializer.Serialize(factories);
 
-            await cache.SetStringAsync(cacheKey, serializedData, token);
+            await cache.SetStringAsync(cacheKey, serializedData, new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(1)
+            }, token: token);
 
             return factories;
+        }
+
+        public async Task<Factory?> GetAsync(int id, CancellationToken token)
+        {
+            var cacheKey = $"factories_{id}";
+            var cachedData = await cache.GetStringAsync(cacheKey, token);
+
+            if (!string.IsNullOrEmpty(cachedData))
+                return JsonSerializer.Deserialize<Factory>(cachedData) ?? throw new InvalidOperationException("JSON deserialization error");
+
+            using var connection = CreateConnection();
+            var sql = "SELECT * FROM Factories WHERE Id=@Id";
+
+            var factory = await connection.QueryFirstOrDefaultAsync<Factory>(sql, new { Id = id });
+
+            if (factory is not null)
+            {
+                var serializedData = JsonSerializer.Serialize(factory);
+
+                await cache.SetStringAsync(cacheKey, serializedData, new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(1)
+                }, token: token);
+            }
+
+            return factory;
         }
 
         public async Task UpdateAsync(int id, Factory factory)
@@ -68,6 +97,7 @@ namespace Factories.WebApi.DAL.Repositories.DapperRepositories
                 throw new InvalidOperationException("Factory not found or no changes were made.");
 
             await cache.RemoveAsync("factories_all");
+            await cache.RemoveAsync($"factoies_{id}");
         }
 
         private NpgsqlConnection CreateConnection() => new(connectionString);

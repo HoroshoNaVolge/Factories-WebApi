@@ -25,9 +25,9 @@ namespace Factories.WebApi.BLL.Controllers
         }
 
         [HttpGet(template: "{id}")]
-        public IActionResult GetTank(int id)
+        public async Task<IActionResult> GetTankAsync(int id, CancellationToken token)
         {
-            var tank = tanksRepository.Get(id);
+            var tank = await tanksRepository.GetAsync(id, token);
 
             if (tank == null)
                 return NotFound();

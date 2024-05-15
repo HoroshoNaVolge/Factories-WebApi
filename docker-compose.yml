@@ -8,14 +8,22 @@ services:
       dockerfile: src/Factories.WebApi.BLL/Dockerfile
     depends_on:
       - postgres-container
+      - redis
+      - rabbitmq
     environment:
       - ConnectionStrings__DefaultConnection=Host=postgres-container;Port=5432;Database=postgres;Username=postgres;Password=${POSTGRES_PASSWORD}
       - ConnectionStrings__UsersConnection=Host=postgres-container;Port=5432;Database=postgres;Username=postgres;Password=${POSTGRES_PASSWORD}
+      - ConnectionStrings__RedisConnection=redis:6379
+      - ConnectionStrings__RabbitMQConnection=rabbitmq
+    ports:
+      - "8080:8080"  # Expose the application port if needed
+      - "8081:8081"  # Expose the application port if needed
   postgres-container:
     image: postgres:13
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD: corsar
+      POSTGRES_DB: facilitiesdb
     ports:
       - "5432:5432"
     volumes:
@@ -26,5 +34,34 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data 
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"  
+      - "15672:15672" 
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
 volumes:
   postgres_data:
+  redis_data:
+  rabbitmq_data:

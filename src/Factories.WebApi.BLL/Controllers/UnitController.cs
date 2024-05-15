@@ -23,9 +23,9 @@ namespace Factories.WebApi.BLL.Controllers
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetUnit(int id)
+        public async Task<IActionResult> GetUnitAsync(int id, CancellationToken token)
         {
-            var unit = unitsRepository.Get(id);
+            var unit = await unitsRepository.GetAsync(id, token);
 
             if (unit == null)
                 return NotFound();

@@ -36,6 +36,14 @@ namespace Factories.WebApi.DAL.Repositories
             await db.Tanks.Include(t => t.Unit)
             .ToListAsync(token);
 
+        public async Task<Tank?> GetAsync(int id, CancellationToken token)
+        {
+            if (db is null || db.Tanks is null)
+                throw new InvalidOperationException("Database or table not initialized correctly");
+
+            return await db.Tanks.FindAsync([id], token);
+        }
+
         public async Task UpdateAsync(int id, Tank tank)
         {
             var existingTank = db.Tanks.Find(id) ?? throw new InvalidOperationException("Tank not found");

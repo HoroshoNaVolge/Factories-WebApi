@@ -33,6 +33,13 @@ namespace Factories.WebApi.DAL.Repositories
         public async Task<IEnumerable<Unit>> GetAllAsync(CancellationToken token) =>
             await db.Units.Include(u => u.Factory).ToListAsync(token);
 
+        public async Task<Unit?> GetAsync(int id, CancellationToken token)
+        {
+            if (db is null || db.Units is null)
+                throw new InvalidOperationException("Database or table not initialized correctly");
+            return await db.Units.FindAsync([id, token], cancellationToken: token);
+        }
+
         public async Task UpdateAsync(int id, Unit unit)
         {
             Unit? existingUnit = db.Units.Find(id) ?? throw new InvalidOperationException("Unit not found");

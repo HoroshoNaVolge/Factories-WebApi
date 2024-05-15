@@ -101,6 +101,46 @@ namespace Factories.WebApi.DAL.Repositories.DapperRepositories
             return tankDict.Values;
         }
 
+        public async Task<Tank?> GetAsync(int id, CancellationToken token)
+        {
+            var cacheKey = $"units_{id}";
+            var cachedData = await cache.GetStringAsync(cacheKey, token);
+
+            if (!string.IsNullOrEmpty(cachedData))
+                return JsonSerializer.Deserialize<Tank>(cachedData) ?? throw new InvalidOperationException("JSON deserialization error"); ;
+
+            using var connection = CreateConnection();
+            var sql = @"
+                      SELECT t.*, u.* FROM Tanks t
+                      LEFT JOIN Units u ON t.UnitId= u.Id
+                      WHERE t.Id = @Id;";
+
+            var tankWithFactory = await connection.QueryAsync<Tank, Unit, Tank>(
+                sql,
+                (tank, unit) =>
+                {
+                    tank.Unit= unit;
+                    return tank;
+                },
+                new { Id = id },
+                splitOn: "Id"
+            );
+
+            var foundTank = tankWithFactory.FirstOrDefault();
+
+            if (foundTank is not null)
+            {
+                var serializedData = JsonSerializer.Serialize(foundTank);
+
+                await cache.SetStringAsync(cacheKey, serializedData, new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(60)
+                }, token: token);
+            }
+
+            return foundTank;
+        }
+
         public async Task UpdateAsync(int id, Tank tank)
         {
             using var connection = CreateConnection();

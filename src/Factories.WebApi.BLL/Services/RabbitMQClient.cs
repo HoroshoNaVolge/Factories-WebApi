@@ -9,7 +9,7 @@ namespace Factories.WebApi.BLL.Services
 
         public RabbitMQClient(string connectionString)
         {
-            var factory = new ConnectionFactory() { HostName=connectionString};
+            var factory = new ConnectionFactory() { HostName = connectionString, Port = 5672 };
             var connection = factory.CreateConnection();
             _channel = connection.CreateModel();
             _channel.QueueDeclare(queue: "tanks_worker_updates", durable: true, exclusive: false, autoDelete: false, arguments: null);

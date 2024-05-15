@@ -61,10 +61,7 @@ namespace Factories.WebApi.DAL.Repositories.DapperRepositories
             var cachedData = await cache.GetStringAsync(cacheKey, token);
 
             if (!string.IsNullOrEmpty(cachedData))
-            {
                 return JsonSerializer.Deserialize<List<Unit>>(cachedData) ?? throw new InvalidOperationException("JSON deserialization error"); ;
-            }
-
 
             using var connection = CreateConnection();
             var sql = @"
@@ -100,6 +97,46 @@ namespace Factories.WebApi.DAL.Repositories.DapperRepositories
             return unitsDict.Values;
         }
 
+        public async Task<Unit?> GetAsync(int id, CancellationToken token)
+        {
+            var cacheKey = $"units_{id}";
+            var cachedData = await cache.GetStringAsync(cacheKey, token);
+
+            if (!string.IsNullOrEmpty(cachedData))
+                return JsonSerializer.Deserialize<Unit>(cachedData) ?? throw new InvalidOperationException("JSON deserialization error"); ;
+
+            using var connection = CreateConnection();
+            var sql = @"
+                      SELECT u.*, f.* FROM Units u
+                      LEFT JOIN Factories f ON u.FactoryId = f.Id
+                      WHERE u.Id = @Id;";
+
+            var unitWithFactory = await connection.QueryAsync<Unit, Factory, Unit>(
+                sql,
+                (unit, factory) =>
+                {
+                    unit.Factory = factory;
+                    return unit;
+                },
+                new { Id = id },
+                splitOn: "Id"
+            );
+
+            var foundUnit = unitWithFactory.FirstOrDefault();
+
+            if (foundUnit is not null)
+            {
+                var serializedData = JsonSerializer.Serialize(foundUnit);
+
+                await cache.SetStringAsync(cacheKey, serializedData, new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(60)
+                }, token: token);
+            }
+
+            return foundUnit;
+        }
+
         public async Task UpdateAsync(int id, Unit unit)
         {
             using var connection = CreateConnection();
@@ -110,6 +147,7 @@ namespace Factories.WebApi.DAL.Repositories.DapperRepositories
                 throw new InvalidOperationException("Unit not found or no changes were made.");
 
             await cache.RemoveAsync("units_all");
+            await cache.RemoveAsync($"units_{id}");
         }
 
         private NpgsqlConnection CreateConnection() => new(connectionString);

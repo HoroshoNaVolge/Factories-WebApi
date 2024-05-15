@@ -31,6 +31,14 @@ namespace Factories.WebApi.DAL.Repositories
         public async Task<IEnumerable<Factory>>? GetAllAsync(CancellationToken token) =>
             await db.Factories.ToListAsync(token);
 
+        public async Task<Factory?> GetAsync(int id, CancellationToken token)
+        {
+            if (db == null || db.Factories == null)
+                throw new InvalidOperationException("Database context or table is not properly initialized.");
+
+            return await db.Factories.FindAsync([id], token);
+        }
+
         public async Task UpdateAsync(int id, Factory factoryToUpdate)
         {
             var existingFactory = db.Factories.Find(id) ?? throw new InvalidOperationException("Factory not found");
