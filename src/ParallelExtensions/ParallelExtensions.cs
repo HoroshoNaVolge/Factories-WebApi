@@ -29,29 +29,31 @@ namespace ParallelExtensions
             CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(tasks);
-
+      
             // Limit the number of parallel tasks to the specified maximum or the number of available processor cores
             maxParallelTasks = Math.Min(maxParallelTasks, Environment.ProcessorCount);
 
             var results = new ConcurrentBag<T>(); // ConcurrentBag to store results safely in a multi-threaded environment
-            var exceptions = new ConcurrentBag<Exception>(); // List to hold exceptions occurred during task execution
+            var exceptions = new ConcurrentBag<Exception>(); // ConcurrentBag to hold exceptions occurred during task execution
 
             var semaphore = new SemaphoreSlim(maxParallelTasks, maxParallelTasks); // SemaphoreSlim to control the number of parallel tasks
+
+            // Initialize combined cancellation token source
+            using var combinedCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
             async Task ExecuteTask(Func<Task<T>> taskFunc)
             {
                 try
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    await semaphore.WaitAsync(cancellationToken); // Wait for semaphore to acquire a slot for parallel execution
+                    combinedCancellationTokenSource.Token.ThrowIfCancellationRequested();
+                    await semaphore.WaitAsync(combinedCancellationTokenSource.Token); // Wait for semaphore to acquire a slot for parallel execution
 
-                    cancellationToken.ThrowIfCancellationRequested();
+                    combinedCancellationTokenSource.Token.ThrowIfCancellationRequested();
                     results.Add(await taskFunc()); // Execute the task and add its result to the ConcurrentBag
                 }
                 catch (OperationCanceledException) when (exceptionHandlingStrategy == ExceptionHandlingStrategy.PropagateImmediately)
                 {
                     // Propagate cancellation immediately if configured to do so
-                    semaphore.Release(); // Release semaphore slot if task execution is canceled
                     throw;
                 }
                 catch (Exception ex)
@@ -59,12 +61,8 @@ namespace ParallelExtensions
                     logger?.LogError(ex, "Error occurred during task execution"); // Log error if logger is provided
 
                     if (exceptionHandlingStrategy == ExceptionHandlingStrategy.AggregateExceptions)
-                    {
-                        lock (exceptions)
-                        {
-                            exceptions.Add(ex); // Add exception to the list if aggregation is enabled
-                        }
-                    }
+                        exceptions.Add(ex); // Add exception to the list if aggregation is enabled
+
                 }
                 finally
                 {
@@ -74,13 +72,14 @@ namespace ParallelExtensions
 
             var tasksToRun = tasks.Select(ExecuteTask).ToList(); // Convert task functions to tasks and start execution
 
+
             try
             {
                 await Task.WhenAll(tasksToRun); // Wait for all tasks to complete
             }
             catch (OperationCanceledException) when (exceptionHandlingStrategy == ExceptionHandlingStrategy.PropagateImmediately)
             {
-                // Swallow the cancellation exception if configured to propagate immediately
+                throw;
             }
 
             if (exceptionHandlingStrategy == ExceptionHandlingStrategy.AggregateExceptions && !exceptions.IsEmpty)
@@ -88,7 +87,7 @@ namespace ParallelExtensions
                 throw new AggregateException("Exceptions occurred during parallel execution.", exceptions); // Throw aggregate exception if enabled and exceptions occurred
             }
 
-            return results?.ToImmutableList() ?? throw new NullReferenceException(nameof(results)); // Return immutable collection of results
+            return results.ToImmutableList()!; // Return immutable collection of results
         }
     }
 
