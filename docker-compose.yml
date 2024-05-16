@@ -1,11 +1,11 @@
 version: '3.4'
 
 services:
-  factories.webapi.bll:
-    image: ${DOCKER_REGISTRY-}factorieswebapibll
+  factories.webapi.pl:
+    image: ${DOCKER_REGISTRY-}factorieswebapipl
     build:
       context: .
-      dockerfile: src/Factories.WebApi.BLL/Dockerfile
+      dockerfile: Dockerfile
     depends_on:
       - postgres-container
       - redis
@@ -22,8 +22,7 @@ services:
     image: postgres:13
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: corsar
-      POSTGRES_DB: facilitiesdb
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
@@ -65,3 +64,5 @@ volumes:
   postgres_data:
   redis_data:
   rabbitmq_data:
+
+

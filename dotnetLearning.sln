@@ -18,7 +18,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Factories.WebApi.NUnitTests
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Factories.WebApi.XUnitTests", "src\Factories.WebApi.XUnitTests\Factories.WebApi.XUnitTests.csproj", "{864CD5DC-A198-4D2B-89D7-D22122C22D9B}"
 EndProject
-Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{35E96F64-329A-4E48-942D-FEEE392D940B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Factories.WebApi.PL", "src\Factories.WebApi.PL\Factories.WebApi.PL.csproj", "{9C47B76A-90B6-4BA9-A00F-6E2F8F871A11}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Элементы решения", "Элементы решения", "{75311644-0BFA-44CE-A153-368AE6C21772}"
+	ProjectSection(SolutionItems) = preProject
+		Dockerfile = Dockerfile
+	EndProjectSection
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{A06EF189-EC76-4D41-96D1-C1CF7556816A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -50,10 +57,14 @@ Global
 		{864CD5DC-A198-4D2B-89D7-D22122C22D9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{864CD5DC-A198-4D2B-89D7-D22122C22D9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{864CD5DC-A198-4D2B-89D7-D22122C22D9B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{35E96F64-329A-4E48-942D-FEEE392D940B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{35E96F64-329A-4E48-942D-FEEE392D940B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{35E96F64-329A-4E48-942D-FEEE392D940B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{35E96F64-329A-4E48-942D-FEEE392D940B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C47B76A-90B6-4BA9-A00F-6E2F8F871A11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C47B76A-90B6-4BA9-A00F-6E2F8F871A11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C47B76A-90B6-4BA9-A00F-6E2F8F871A11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C47B76A-90B6-4BA9-A00F-6E2F8F871A11}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A06EF189-EC76-4D41-96D1-C1CF7556816A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A06EF189-EC76-4D41-96D1-C1CF7556816A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A06EF189-EC76-4D41-96D1-C1CF7556816A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A06EF189-EC76-4D41-96D1-C1CF7556816A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

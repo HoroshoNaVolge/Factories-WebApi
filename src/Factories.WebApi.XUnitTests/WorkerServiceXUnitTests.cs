@@ -15,7 +15,7 @@ namespace Factories.WebApi.XUnitTests
         {
             mockRandomService = new Mock<IRandomService>();
             tankRepositoryMock = new Mock<IRepository<Tank>>();
-            workerService = new WorkerService(null!, mockRandomService.Object);
+         //   workerService = new WorkerService(null!, mockRandomService.Object);
         }
 
         [Fact]
