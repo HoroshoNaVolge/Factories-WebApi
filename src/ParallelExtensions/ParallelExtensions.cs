@@ -29,7 +29,7 @@ namespace ParallelExtensions
             CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(tasks);
-      
+
             // Limit the number of parallel tasks to the specified maximum or the number of available processor cores
             maxParallelTasks = Math.Min(maxParallelTasks, Environment.ProcessorCount);
 
@@ -53,8 +53,8 @@ namespace ParallelExtensions
                 }
                 catch (OperationCanceledException) when (exceptionHandlingStrategy == ExceptionHandlingStrategy.PropagateImmediately)
                 {
-                    // Propagate cancellation immediately if configured to do so
-                    throw;
+                    logger?.LogInformation("Operation cancelled during task execution"); // Log cancellation if logger is provided
+                    throw; // Propagate cancellation if configured to do so
                 }
                 catch (Exception ex)
                 {
@@ -62,7 +62,6 @@ namespace ParallelExtensions
 
                     if (exceptionHandlingStrategy == ExceptionHandlingStrategy.AggregateExceptions)
                         exceptions.Add(ex); // Add exception to the list if aggregation is enabled
-
                 }
                 finally
                 {
@@ -71,7 +70,6 @@ namespace ParallelExtensions
             }
 
             var tasksToRun = tasks.Select(ExecuteTask).ToList(); // Convert task functions to tasks and start execution
-
 
             try
             {
@@ -87,7 +85,7 @@ namespace ParallelExtensions
                 throw new AggregateException("Exceptions occurred during parallel execution.", exceptions); // Throw aggregate exception if enabled and exceptions occurred
             }
 
-            return results.ToImmutableList()!; // Return immutable collection of results
+            return [.. results]; // Return immutable collection of results
         }
     }
 
