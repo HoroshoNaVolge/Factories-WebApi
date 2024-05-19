@@ -404,3 +404,4 @@ src/.DS_Store
 /src/Factories.WebApi.BLL/appsettings.Development.json
 .env
 /src/Factories.WebApi.PL/appsettings.Development.json
+/src/Factories.WebApi.PL/appsettings.Development.json
