@@ -18,6 +18,7 @@ services:
     ports:
       - "8080:8080"  # Expose the application port if needed
       - "8081:8081"  # Expose the application port if needed
+
   postgres-container:
     image: postgres:13
     environment:
@@ -33,6 +34,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
   redis:
     image: redis:latest
     ports:
@@ -44,6 +46,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+
   rabbitmq:
     image: rabbitmq:3-management
     ports:
@@ -60,9 +63,16 @@ services:
       timeout: 10s
       retries: 3
 
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - factories.webapi.pl
+
 volumes:
   postgres_data:
   redis_data:
   rabbitmq_data:
-
-
