@@ -1,5 +1,8 @@
 version: '3.4'
 
+networks:
+  my_network:
+
 services:
   factories.webapi.pl:
     image: ${DOCKER_REGISTRY-}factorieswebapipl
@@ -19,6 +22,8 @@ services:
       - "8080:8080"  # Expose the application port if needed
       - "8081:8081"  # Expose the application port if needed
     restart: on-failure
+    networks:
+      - factoriesWebapi
 
   postgres-container:
     image: postgres:13
@@ -35,6 +40,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - factoriesWebapi
 
   redis:
     image: redis:latest
@@ -47,6 +54,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+    networks:
+      - factoriesWebapi
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -63,6 +72,8 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+    networks:
+      - factoriesWebapi
 
   nginx:
     image: nginx:latest
@@ -74,6 +85,24 @@ services:
       - factories.webapi.pl
       - rabbitmq
       - postgres-container 
+    networks:
+      - factoriesWebapi
+ 
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - factoriesWebapi
+  
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - factoriesWebapi
 
 volumes:
   postgres_data:

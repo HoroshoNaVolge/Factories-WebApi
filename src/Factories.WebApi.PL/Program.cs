@@ -15,6 +15,7 @@ using Microsoft.OpenApi.Models;
 using Factories.WebApi.BLL.Database;
 using Factories.WebApi.DAL.Repositories.DapperRepositories;
 using Microsoft.Extensions.Caching.Distributed;
+using Prometheus;
 
 namespace Factories.WebApi.BLL
 {
@@ -158,6 +159,8 @@ namespace Factories.WebApi.BLL
             app.UseAuthorization();
 
             app.MapControllers();
+
+            app.UseHttpMetrics();
 
             app.Run();
 
