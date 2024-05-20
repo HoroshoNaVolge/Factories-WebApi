@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
 using Factories.WebApi.BLL.Database;
 using Factories.WebApi.DAL.Repositories.DapperRepositories;
-using System.Threading.RateLimiting;
 using Microsoft.Extensions.Caching.Distributed;
 
 namespace Factories.WebApi.BLL
