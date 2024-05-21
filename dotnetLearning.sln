@@ -5,7 +5,13 @@ VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dotnetLearning", "src\dotnetLearning\dotnetLearning.csproj", "{01232751-E010-4470-BF5D-1AD7716E8440}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCore.WebApi", "src\AspNetCore.WebApi\AspNetCore.WebApi.csproj", "{795EC67C-CAE0-4AD1-9C84-6F6DE3ADA553}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore.WebApi", "src\AspNetCore.WebApi\AspNetCore.WebApi.csproj", "{795EC67C-CAE0-4AD1-9C84-6F6DE3ADA553}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RunInParallelJsonPlaceholder", "src\RunInParallelJsonPlaceholder\RunInParallelJsonPlaceholder.csproj", "{DFC2D1DE-31F2-452B-92DB-0F3B446D55E1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParallelExtensions", "src\ParallelExtensions\ParallelExtensions.csproj", "{280E3000-F83E-4D39-9AC6-37EF8CCF9CE1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParallelExtensions.Tests", "ParallelExtensions.Tests\ParallelExtensions.Tests.csproj", "{575B189E-1E83-457C-9C15-9BD1FE24DA42}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +27,18 @@ Global
 		{795EC67C-CAE0-4AD1-9C84-6F6DE3ADA553}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{795EC67C-CAE0-4AD1-9C84-6F6DE3ADA553}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{795EC67C-CAE0-4AD1-9C84-6F6DE3ADA553}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFC2D1DE-31F2-452B-92DB-0F3B446D55E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFC2D1DE-31F2-452B-92DB-0F3B446D55E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFC2D1DE-31F2-452B-92DB-0F3B446D55E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFC2D1DE-31F2-452B-92DB-0F3B446D55E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{280E3000-F83E-4D39-9AC6-37EF8CCF9CE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{280E3000-F83E-4D39-9AC6-37EF8CCF9CE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{280E3000-F83E-4D39-9AC6-37EF8CCF9CE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{280E3000-F83E-4D39-9AC6-37EF8CCF9CE1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{575B189E-1E83-457C-9C15-9BD1FE24DA42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{575B189E-1E83-457C-9C15-9BD1FE24DA42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{575B189E-1E83-457C-9C15-9BD1FE24DA42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{575B189E-1E83-457C-9C15-9BD1FE24DA42}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
