@@ -64,6 +64,38 @@ namespace ParallelExtensions.Tests
         }
 
         [Fact]
+        public async Task RunInParallel_Cancellation_CancelsAllTasks()
+        {
+            var cancellationTokenSource = new CancellationTokenSource();
+            var cancellationToken = cancellationTokenSource.Token;
+
+            var tasks = new List<Func<Task<int>>>
+            {
+                async () => { await Task.Delay(1000, cancellationToken); return 1; },
+                async () => { await Task.Delay(1000, cancellationToken); return 2; },
+                async () => { await Task.Delay(1000, cancellationToken); return 3; }
+            };
+
+            var executionTask = ParallelExtensions.RunInParallel(tasks, cancellationToken: cancellationToken);
+
+            cancellationTokenSource.CancelAfter(500); 
+
+            try
+            {
+                await executionTask;
+            }
+            catch (TaskCanceledException)
+            {
+                // Check that all tasks were indeed canceled
+                foreach (var task in tasks)
+                    Assert.True(task().IsCanceled);
+                
+                // All tasks were canceled as expected
+                return;
+            }
+        }
+
+        [Fact]
         public async Task RunInParallel_AggregateExceptionsStrategy()
         {
             // Arrange
