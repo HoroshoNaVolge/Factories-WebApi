@@ -1,4 +1,4 @@
-# Репозиторий моего прохождения курса [Navferty/dot-learning]( https://github.com/navferty/dotnet-learning)
+# Репозиторий моего WebApi.
 
 # Репозиторий содержит три проекта:
 # 1. Factiroies. WebApi
@@ -10,16 +10,7 @@ Docker
 БД - postgres
 
 # 2  dotnetLearning
-Содержит
+Содержит учебные материалы, выполненные задания с курса  [Navferty/dot-learning]( https://github.com/navferty/dotnet-learning)
 # 3. AspNetCore.WebApi 
 
-Проект WebApi, работающего с API Dadata. Урок 1.2B.
-
-## Урок 1.2B  
-
-<details>
-<summary>Выполненное задание на текущий момент</summary>
-
-* Задание со звёздочкой: реализовать веб-приложение на ASP.NET Core, функционально аналогичное предыдущему заданию, которое будет отдавать ответ по HTTP Get-запросу (ASP.NET Core Web Api)
-
-</details>
+Проект WebApi, работающего с API Dadata.
