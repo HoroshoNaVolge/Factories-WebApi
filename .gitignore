@@ -400,3 +400,6 @@ FodyWeavers.xsd
 src/.DS_Store
 .DS_Store
 /src/dotnetLearning/FactoryApp/Files/Facilities.xlsx
+/Factories.WebApi.BLL/appsettings.Development.json
+/src/Factories.WebApi.BLL/appsettings.Development.json
+.env

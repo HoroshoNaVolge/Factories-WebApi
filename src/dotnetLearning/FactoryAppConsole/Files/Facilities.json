@@ -79,22 +79,6 @@
       "UnitId": 3,
       "Volume": 500,
       "MaxVolume": 500
-    },
-    {
-      "Id": 1,
-      "Name": "11",
-      "Description": "11",
-      "UnitId": 11,
-      "Volume": 11,
-      "MaxVolume": 11
-    },
-    {
-      "Id": 123,
-      "Name": "asd",
-      "Description": "asd",
-      "UnitId": 123,
-      "Volume": 123,
-      "MaxVolume": 123
     }
   ]
 }
