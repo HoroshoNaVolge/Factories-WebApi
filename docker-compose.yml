@@ -1,11 +1,14 @@
 version: '3.4'
 
+networks:
+  my_network:
+
 services:
-  factories.webapi.bll:
-    image: ${DOCKER_REGISTRY-}factorieswebapibll
+  factories.webapi.pl:
+    image: ${DOCKER_REGISTRY-}factorieswebapipl
     build:
       context: .
-      dockerfile: src/Factories.WebApi.BLL/Dockerfile
+      dockerfile: Dockerfile
     depends_on:
       - postgres-container
       - redis
@@ -18,12 +21,15 @@ services:
     ports:
       - "8080:8080"  # Expose the application port if needed
       - "8081:8081"  # Expose the application port if needed
+    restart: on-failure
+    networks:
+      - factoriesWebapi
+
   postgres-container:
     image: postgres:13
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: corsar
-      POSTGRES_DB: facilitiesdb
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
@@ -34,6 +40,9 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - factoriesWebapi
+
   redis:
     image: redis:latest
     ports:
@@ -45,6 +54,9 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+    networks:
+      - factoriesWebapi
+
   rabbitmq:
     image: rabbitmq:3-management
     ports:
@@ -60,6 +72,37 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+    networks:
+      - factoriesWebapi
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - factories.webapi.pl
+      - rabbitmq
+      - postgres-container 
+    networks:
+      - factoriesWebapi
+ 
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - factoriesWebapi
+  
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - factoriesWebapi
 
 volumes:
   postgres_data:

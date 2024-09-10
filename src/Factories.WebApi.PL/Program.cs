@@ -14,8 +14,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
 using Factories.WebApi.BLL.Database;
 using Factories.WebApi.DAL.Repositories.DapperRepositories;
-using System.Threading.RateLimiting;
 using Microsoft.Extensions.Caching.Distributed;
+using Prometheus;
 
 namespace Factories.WebApi.BLL
 {
@@ -153,12 +153,14 @@ namespace Factories.WebApi.BLL
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();
+
+            app.UseHttpMetrics();
 
             app.Run();
 

@@ -22,7 +22,7 @@ namespace Factories.WebApi.BLL.Services
 
         private void InitializeRabbitMQ()
         {
-            var factory = new ConnectionFactory() { DispatchConsumersAsync = true, HostName = "rabbitmq", Port = 5672 }; 
+            var factory = new ConnectionFactory() { DispatchConsumersAsync = true, HostName = "rabbitmq", Port = 5672 }; // TODO: добавить конфигурацию хоста
             _connection = factory.CreateConnection();
             _channel = _connection.CreateModel();
             _channel.QueueDeclare(queue: _queueName, durable: true, exclusive: false, autoDelete: false, arguments: null);
